@@ -36,9 +36,15 @@ export const postRequest = async ({
   body,
   isPrivate = false,
 }: PostRequestProps ): Promise<AxiosResponse> => {
-  return axiosInstance.post(url, body, {
+
+  console.log(url,body);
+  
+  
+  return axiosInstance.post(url, body,
+     {
     headers: getAuthHeader(isPrivate),
-  });
+  }
+);
 };
 
 // getRequest

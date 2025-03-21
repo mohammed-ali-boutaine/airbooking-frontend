@@ -1,40 +1,60 @@
 import React, { useState } from "react";
 import { LogIn, Mail, Lock } from "lucide-react";
-import axios from "axios";
+import { postRequest } from "../utils/services";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const  handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-//     try {
+    // Form validation
+    if (!email || !password) {
+      setError("All fields are required.");
+      return;
+    }
 
-     const response = await axios.post("http://127.0.0.1:8000/api/login", {
-            email,
-            password,
-            remember,
-          },{
-               headers: {
-                'Content-Type': 'application/json',
-                 },
-          });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
-      console.log(response);
-      
-      if(response) {
-        console.log("Login successful");
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await postRequest({
+        url: "/login",
+        body: { email, password, remember },
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        setSuccess("Login successful! Redirecting...");
+        setTimeout(() => navigate("/"), 2000);
       }
-//     } catch (error) {
-//       console.log(error);
-//     }
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || "Invalid credentials. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full max-w-md mx-auto p-8 bg-white rounded-xl shadow-sm border border-gray-50 font-sans">
-      <h2 className="text-2xl font-bold text-center mb-8 text-gray-800">
+      <h2 className="text-[var(--primary-color)]   text-2xl font-bold text-center mb-8 ">
         Welcome Back
       </h2>
 
@@ -58,6 +78,7 @@ const Login: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all duration-200"
               placeholder="you@example.com"
+              autoComplete="email"
               required
             />
           </div>
@@ -82,6 +103,7 @@ const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all duration-200"
               placeholder="••••••••"
+              autoComplete="current-password"
               required
             />
           </div>
@@ -113,23 +135,33 @@ const Login: React.FC = () => {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full flex justify-center items-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm hover:shadow-md"
+          className="w-full flex justify-center items-center bg-[var(--primary-color)]  hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-sm hover:shadow-md"
+          disabled={loading}
         >
-          <LogIn size={18} className="mr-2" />
-          Sign In
+          {loading ? (
+            "Signing In..."
+          ) : (
+            <>
+              <LogIn size={18} className="mr-2" /> Sign In
+            </>
+          )}
         </button>
 
         {/* Sign up link */}
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600">Don't have an account? </span>
-          <a
-            href="#"
+          <Link
+            to="/register"
             className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
           >
             Sign up
-          </a>
+          </Link>
         </div>
       </form>
+
+      {/* Error and Success Messages */}
+      {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+      {success && <p className="text-green-500 text-sm mt-4">{success}</p>}
     </div>
   );
 };

@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
-
-
 /* src/index.css */
 :root {
-     --color-primary: #1e40af; /* Blue-700 */
-     --color-secondary: #facc15; /* Yellow-400 */
-     --color-accent: #ef4444; /* Red-500 */
-   }
+  --primary-color: #FF385C;
+  --secondary-color: #F6475F;
+  --gray-color: #D3D3D3;
+  --text-size: 16px;
+}
