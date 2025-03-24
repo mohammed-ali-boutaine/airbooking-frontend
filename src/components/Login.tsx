@@ -43,6 +43,7 @@ const Login: React.FC = () => {
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => navigate("/"), 2000);
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(
         err.response?.data?.message || "Invalid credentials. Please try again."
