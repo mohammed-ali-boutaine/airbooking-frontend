@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { LogIn, Mail, Lock } from "lucide-react";
-import { postRequest } from "../utils/services";
+import { postRequest } from "../../utils/services";
 import { useNavigate, Link } from "react-router-dom";
 
 const Login: React.FC = () => {
@@ -14,6 +14,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
 
     // Form validation
     if (!email || !password) {
@@ -43,7 +44,6 @@ const Login: React.FC = () => {
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => navigate("/"), 2000);
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(
         err.response?.data?.message || "Invalid credentials. Please try again."

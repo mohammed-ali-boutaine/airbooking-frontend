@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Mail, Lock, UserPlus, User } from "lucide-react";
-import { postRequest } from "../utils/services";
+import { postRequest } from "../../utils/services";
 import { useNavigate, Link } from "react-router-dom";
 
 const Register: React.FC = () => {
