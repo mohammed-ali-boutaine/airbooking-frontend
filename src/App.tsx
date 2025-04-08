@@ -11,6 +11,7 @@ import Navbar from "./components/static/NavBar";
 import RegisterForm from "./components/auth/RegisterForm";
 import Dashboard from "./admin/Dashboard";
 import HotelForm from "./components/hotel/HotelForm";
+import Register from "./components/auth/Register";
 const App: React.FC = () => {
   return (
     <Router>
@@ -22,7 +23,7 @@ const App: React.FC = () => {
         <Route path="/create-hotel" element={<HotelForm />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

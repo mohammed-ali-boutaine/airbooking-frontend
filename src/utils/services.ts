@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
+import api from "./api";
 
 export const baseUrl = "http://localhost:8000/api";
 
@@ -18,40 +19,42 @@ const getAuthHeader = (isPrivate: boolean) => ({
 });
 
 // Interfaces
-interface GetRequestProps  {
+interface GetRequestProps {
   url: string;
   isPrivate?: boolean;
 }
 
-interface PostRequestProps  {
+interface PostRequestProps {
   url: string;
   body: object;
-//     body: Record<string, any>;
   isPrivate?: boolean;
 }
 
-//  postRequest
-export const postRequest = async ({
+interface RequestConfig {
+  url: string;
+  body: any;
+  headers?: Record<string, string>;
+}
+
+// postRequest
+export const postRequest = async <T>({
   url,
   body,
-  isPrivate = false,
-}: PostRequestProps ): Promise<AxiosResponse> => {
-
-  console.log(url,body);
-  
-  
-  return axiosInstance.post(url, body,
-     {
-    headers: getAuthHeader(isPrivate),
+  headers = {},
+}: RequestConfig): Promise<T> => {
+  try {
+    const response = await api.post(url, body, { headers });
+    return response.data;
+  } catch (error) {
+    throw error as AxiosError;
   }
-);
 };
 
 // getRequest
 export const getRequest = async ({
   url,
   isPrivate = false,
-}: GetRequestProps ): Promise<AxiosResponse> => {
+}: GetRequestProps): Promise<AxiosResponse> => {
   return axiosInstance.get(url, {
     headers: getAuthHeader(isPrivate),
   });
