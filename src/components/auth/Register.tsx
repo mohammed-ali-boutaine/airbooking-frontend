@@ -66,6 +66,8 @@ const Register: React.FC = () => {
 
     setError("");
     setSuccess("");
+
+    
     return true;
   };
 
@@ -78,8 +80,8 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-8 bg-white rounded-xl shadow-sm border border-gray-50 font-sans">
-      <h2 className="text-[var(--primary-color)]  text-2xl font-bold text-center mb-8 ">
+    <div className="border-[var(--main-border)] border  max-w-md mt-10 mb-10 rounded-2xl mx-auto p-8 bg-white shadow-sm borderfont-sans">
+      <h2 className="text-[var(--primary-color)]  text-2xl font-bold mb-8 ">
         Create an Account
       </h2>
 
@@ -107,6 +109,7 @@ const Register: React.FC = () => {
           placeholder="strong password"
           value={formData.password}
           onChange={handleChange}
+          required
         />
 
         <div className="mt-6">
@@ -139,7 +142,7 @@ const Register: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-3 hover:cursor-pointer">
         <Button
           variant="social"
           fullWidth
@@ -148,10 +151,25 @@ const Register: React.FC = () => {
               xmlns="http://www.w3.org/2000/svg"
               width="18"
               height="18"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+              viewBox="-3 0 262 262"
+              preserveAspectRatio="xMidYMid"
             >
-              <path d="M12.545 10.239v3.821h5.445c-.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866.549 3.921 1.453l2.814-2.814C17.503 2.988 15.139 2 12.545 2 7.021 2 2.543 6.477 2.543 12s4.478 10 10.002 10c8.396 0 10.249-7.85 9.426-11.748l-9.426-.013z" />
+              <path
+                d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                fill="#4285F4"
+              />
+              <path
+                d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                fill="#34A853"
+              />
+              <path
+                d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+                fill="#FBBC05"
+              />
+              <path
+                d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                fill="#EB4335"
+              />
             </svg>
           }
         >
@@ -166,10 +184,12 @@ const Register: React.FC = () => {
               xmlns="http://www.w3.org/2000/svg"
               width="18"
               height="18"
-              fill="currentColor"
-              viewBox="0 0 24 24"
+              viewBox="0 0 320 512"
             >
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              <path
+                fill="#1877F2"
+                d="M279.14 288l14.22-92.66h-88.91V131.56c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S261.88 0 225.36 0c-73.06 0-121 44.38-121 124.72V195.3H22.89V288h81.47v224h100.2V288z"
+              />
             </svg>
           }
         >

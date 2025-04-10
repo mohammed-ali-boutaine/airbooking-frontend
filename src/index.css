@@ -5,5 +5,7 @@
   --primary-color: #FF385C;
   --secondary-color: #F6475F;
   --gray-color: #D3D3D3;
+  --main-border : #DDDDDD ;
   --text-size: 16px;
+  --input-border :#B0B0B0 ;
 }

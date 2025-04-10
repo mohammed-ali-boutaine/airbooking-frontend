@@ -28,8 +28,9 @@ const Navbar: React.FC= () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex-shrink-0 flex items-center">
-              {/* <img src={logo} alt="" /> */}
-              <span className="text-2xl font-bold text-red-500">Air<span className="text-gray-700">Booking</span></span>
+              <Link to="/">
+              <img width="144" height="35" src={logo} alt="airbooking-logo" />
+              </Link>
             </div>
             
             <div className="hidden md:block flex-grow mx-8">
@@ -63,8 +64,15 @@ const Navbar: React.FC= () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Button variant="outline" >Login</Button>
-              <Button variant="primary" >Sign up</Button>
+              <Link to="/login">
+              <Button type='button' variant="outline" >
+                Login</Button>
+              </Link>
+                <Link to="/register">
+              <Button variant="primary" >
+                Sign up
+                </Button>
+                </Link>
               <div className="relative" ref={menuRef}>
                 <button 
                   className="p-1 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none"

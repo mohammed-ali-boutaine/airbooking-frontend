@@ -17,10 +17,10 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   icon
 }) => {
-  const baseClasses = "inline-flex justify-center items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none transition-colors duration-300";
+  const baseClasses = "inline-flex justify-center items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none transition-colors duration-300  hover:cursor-pointer";
   
   const variantClasses = {
-    primary: "border-transparent text-white bg-red-500 hover:bg-red-600",
+    primary: "border-transparent text-white bg-[var(--primary-color)] hover:opacity-75",
     outline: "border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
     social: "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
   };
@@ -33,8 +33,8 @@ const Button: React.FC<ButtonProps> = ({
       className={`${baseClasses} ${variantClasses[variant]} ${widthClass}`}
       onClick={onClick}
     >
-      {icon && <span className="mr-2">{icon}</span>}
       {children}
+      {icon && <span className="ml-2">{icon}</span>}
     </button>
   );
 };

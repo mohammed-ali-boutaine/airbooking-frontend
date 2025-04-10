@@ -1,6 +1,5 @@
 import React, { useState, FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Menu } from "lucide-react";
 import { postRequest } from "../../utils/services";
 
 interface RegisterFormData {

@@ -26,7 +26,7 @@ const Input: React.FC<InputProps> = ({
           </div>
         )}
         <input
-          className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${
+          className={`border-[var(--main-border)] w-full px-3 py-2 ftext-sm  border rounded-lg  focus:ring-indigo-500 focus:border-indigo-500 ${
             icon ? "pl-10" : ""
           } ${error ? "border-red-500" : ""} ${className}`}
           {...props}
