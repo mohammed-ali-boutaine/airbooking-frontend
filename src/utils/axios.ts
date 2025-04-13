@@ -1,47 +1,49 @@
-import axios, { AxiosError, InternalAxiosRequestConfig    } from "axios";
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-
-// error type for api 
 interface ApiError {
   message: string;
   statusCode: number;
 }
 
-// Axios instance with base url from .env 
+let cachedToken: string | null = localStorage.getItem("token");
+
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     "Content-Type": "application/json",
-  }
+  },
 });
 
-// Add token to every request
 axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig  ) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  (config: InternalAxiosRequestConfig) => {
+    if (cachedToken) {
+      config.headers.Authorization = `Bearer ${cachedToken}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-
-// Auto logout on 401
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = "/login";
+      localStorage.removeItem("token");
+      cachedToken = null;
+      window.location.href = "/login"; // Consider making this configurable
     }
     return Promise.reject(error);
   }
 );
 
 export const handleApiError = (error: AxiosError<ApiError>): string => {
-  return error.response?.data?.message || "Something went wrong!";
+  if (error.response) {
+    return error.response.data?.message || "An error occurred.";
+  }
+  if (error.request) {
+    return "Network error. Please check your connection.";
+  }
+  return error.message || "An unexpected error occurred.";
 };
 
 export default axiosInstance;
