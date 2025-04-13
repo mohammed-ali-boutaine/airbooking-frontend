@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 import { handleApiError } from "../../utils/api";
-
+import { redirectToProvider } from "../../utils/redirect";
 interface RegisterFormData {
   name: string;
   email: string;
@@ -144,6 +144,7 @@ const Register: React.FC = () => {
 
       <div className="mt-4 space-y-3 hover:cursor-pointer">
         <Button
+        onClick={()=> redirectToProvider('google')}
           variant="social"
           fullWidth
           icon={
@@ -177,6 +178,8 @@ const Register: React.FC = () => {
         </Button>
 
         <Button
+                onClick={()=> redirectToProvider('facebook')}
+
           variant="social"
           fullWidth
           icon={
