@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 // import { Mail, Lock, UserPlus, User } from "lucide-react";
-import { postRequest } from "../../utils/services";
-import { useNavigate, Link } from "react-router-dom";
+// import { postRequest } from "../../utils/services";
+import { Link } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-import { handleApiError } from "../../utils/api";
+// import { handleApiError } from "../../utils/api";
 import { redirectToProvider } from "../../utils/redirect";
 interface RegisterFormData {
   name: string;
@@ -27,57 +27,57 @@ const Register: React.FC = () => {
     });
   };
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const navigate = useNavigate();
+  // const [error, setError] = useState("");
+  // const [success, setSuccess] = useState("");
+  // const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    // if (!validateForm()) return;
 
-    try {
-      const response = await postRequest({
-        url: "/register",
-        body: formData,
-      });
+    // try {
+    //   const response = await postRequest({
+    //     url: "/register",
+    //     body: formData,
+    //   });
 
-      handleRegistrationSuccess(response);
-    } catch (error: any) {
-      setError(handleApiError(error));
-    }
+    //   handleRegistrationSuccess(response);
+    // } catch (error: any) {
+    //   setError(handleApiError(error));
+    // }
   };
 
-  const validateForm = (): boolean => {
-    if (!formData.name || !formData.email || !formData.password) {
-      setError("All fields are required.");
-      return false;
-    }
+  // const validateForm = (): boolean => {
+  //   if (!formData.name || !formData.email || !formData.password) {
+  //     setError("All fields are required.");
+  //     return false;
+  //   }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address.");
-      return false;
-    }
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   if (!emailRegex.test(formData.email)) {
+  //     setError("Please enter a valid email address.");
+  //     return false;
+  //   }
 
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      return false;
-    }
+  //   if (formData.password.length < 6) {
+  //     setError("Password must be at least 6 characters long.");
+  //     return false;
+  //   }
 
-    setError("");
-    setSuccess("");
+  //   setError("");
+  //   setSuccess("");
 
     
-    return true;
-  };
+  //   return true;
+  // };
 
-  const handleRegistrationSuccess = (response: any) => {
-    const { token, user } = response.data;
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-    setSuccess("Registration successful! Redirecting...");
-    setTimeout(() => navigate("/"), 2000);
-  };
+  // const handleRegistrationSuccess = (response: any) => {
+  //   const { token, user } = response.data;
+  //   localStorage.setItem("token", token);
+  //   localStorage.setItem("user", JSON.stringify(user));
+  //   setSuccess("Registration successful! Redirecting...");
+  //   setTimeout(() => navigate("/"), 2000);
+  // };
 
   return (
     <div className="border-[var(--main-border)] border  max-w-md mt-10 mb-10 rounded-2xl mx-auto p-8 bg-white shadow-sm borderfont-sans">
@@ -119,8 +119,8 @@ const Register: React.FC = () => {
         </div>
       </form>
 
-      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-      {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
+      {/* {error && <p className="text-red-500 text-sm mb-4">{error}</p>} */}
+      {/* {success && <p className="text-green-500 text-sm mb-4">{success}</p>} */}
 
       <div className="text-center mt-6">
         <span className="text-sm text-gray-600">Already have an account? </span>

@@ -7,23 +7,18 @@ import NotFound from "./components/static/NotFound";
 import Home from "./pages/Home";
 
 import Navbar from "./components/static/NavBar";
-// import Register from "./components/Register";
-// import RegisterForm from "./components/auth/RegisterForm";
-// import Dashboard from "./admin/Dashboard";
 import HotelForm from "./components/hotel/HotelForm";
 import Register from "./components/auth/Register";
 import Footer from "./components/static/Footer";
 import { useUserStore } from "./store/useUserStore";
 
 const App: React.FC = () => {
-  const { user, loading, error, fetchUserFromToken } = useUserStore(
-    (state) => ({
-      user: state.user,
-      loading: state.loading,
-      error: state.error,
-      fetchUserFromToken: state.fetchUserFromToken,
-    })
-  );
+
+
+  const user = useUserStore((state) => state.user);
+const loading = useUserStore((state) => state.loading);
+const error = useUserStore((state) => state.error);
+const fetchUserFromToken = useUserStore((state) => state.fetchUserFromToken);
 
   useEffect(() => {
     if (!user) {
@@ -35,7 +30,7 @@ const App: React.FC = () => {
     <Router>
       <Navbar />
       <div>
-        {loading && <p>Loading...</p>}
+        {loading && <p>Loading...</p>} 
         {error && <p className="text-red-500">{error}</p>}
         {user && <p>Welcome, {user.name}</p>}
       </div>

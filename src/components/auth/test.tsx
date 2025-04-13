@@ -4,11 +4,10 @@ import React, { useState } from "react";
 import {  Link } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-import CheckBox from "../../ui/CheckBox";
 interface LoginFormData {
   email: string;
   password: string;
-  remeber: boolean;
+  remeber?: boolean;
 }
 
 const Login: React.FC = () => {
@@ -20,7 +19,6 @@ const Login: React.FC = () => {
     });
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        
         const { name, value } = e.target;
         if(name == "remeber"){
           setFormData({
@@ -127,8 +125,7 @@ const Login: React.FC = () => {
 
         {/* Password Field */}
         <Input
-                name="password"
-
+        name="password"
           type="password"
           label="Password"
           placeholder="strong password"
@@ -141,7 +138,17 @@ const Login: React.FC = () => {
 
 
         <div className="flex items-center justify-between mb-8">
-          <CheckBox id="remeber" checked={formData.remeber} label="remeber me" onChange={handleChange}/>
+          <div className="flex items-center">
+          <Input
+          name="remeber"
+          type="checkbox"
+          id="remember"
+          label="Remember me"
+          htmlFor="remember"
+          checked={formData.remeber}
+          onChange={handleChange}
+        />
+          </div>
 
           <a className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
             Forgot password?
@@ -149,6 +156,7 @@ const Login: React.FC = () => {
         </div>
 
         {/* Submit Button */}
+
         <div className="mt-6">
           <Button variant="primary" fullWidth type="submit">
             Continue
