@@ -3,6 +3,7 @@
 /* src/index.css */
 :root {
   --primary-color: #FF385C;
+  --primary-color-hover: #ff385dcf;
   --secondary-color: #F6475F;
   --gray-color: #D3D3D3;
   --main-border : #DDDDDD ;

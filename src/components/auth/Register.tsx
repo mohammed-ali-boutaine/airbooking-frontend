@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-// import { Mail, Lock, UserPlus, User } from "lucide-react";
-// import { postRequest } from "../../utils/services";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-// import { handleApiError } from "../../utils/api";
 import { redirectToProvider } from "../../utils/redirect";
+import axiosInstance from "../../utils/axios";
+import { notifyError, notifySuccess } from "../../utils/toast";
+import { useUserStore } from "../../store/useUserStore";
 interface RegisterFormData {
   name: string;
   email: string;
@@ -13,7 +13,6 @@ interface RegisterFormData {
 }
 
 const Register: React.FC = () => {
-
   // form data state
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
@@ -21,18 +20,14 @@ const Register: React.FC = () => {
     password: "",
   });
 
-  // errors and loading
-    const [error, setError] = useState<string>("");
-    const [loading, setLoading] = useState<boolean>(false);
-    const navigate = useNavigate();
+  //  
+  const setUser = useUserStore( state => state.setUser)
 
+  //  loading
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-
-
-
-
-
-
+  // handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -41,57 +36,35 @@ const Register: React.FC = () => {
     });
   };
 
+  // submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
     console.log(formData);
-    
-    // if (!validateForm()) return;
 
-    // try {
-    //   const response = await postRequest({
-    //     url: "/register",
-    //     body: formData,
-    //   });
+    try {
+      const reposne = await axiosInstance.post("/register", formData);
+      const data = reposne.data;
+      console.log(data);
 
-    //   handleRegistrationSuccess(response);
-    // } catch (error: any) {
-    //   setError(handleApiError(error));
-    // }
+      localStorage.setItem("token", data.token);
+
+      // set user :
+      setUser(data.user,data.token)
+
+      notifySuccess("Account created successfully!");
+      navigate("/");
+    } catch (err: any) {
+      if (err.response?.status === 422) {
+        const errorMessages = Object.values(err.response.data.errors).flat();
+        notifyError(errorMessages.join("\n"));
+      } else {
+        notifyError(err.response?.data?.message || "Registration failed");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // const validateForm = (): boolean => {
-  //   if (!formData.name || !formData.email || !formData.password) {
-  //     setError("All fields are required.");
-  //     return false;
-  //   }
-
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   if (!emailRegex.test(formData.email)) {
-  //     setError("Please enter a valid email address.");
-  //     return false;
-  //   }
-
-  //   if (formData.password.length < 6) {
-  //     setError("Password must be at least 6 characters long.");
-  //     return false;
-  //   }
-
-  //   setError("");
-  //   setSuccess("");
-
-    
-  //   return true;
-  // };
-
-  // const handleRegistrationSuccess = (response: any) => {
-  //   const { token, user } = response.data;
-  //   localStorage.setItem("token", token);
-  //   localStorage.setItem("user", JSON.stringify(user));
-  //   setSuccess("Registration successful! Redirecting...");
-  //   setTimeout(() => navigate("/"), 2000);
-  // };
 
   return (
     <div className="border-[var(--main-border)] border  max-w-md mt-10 mb-10 rounded-2xl mx-auto p-8 bg-white shadow-sm borderfont-sans">
@@ -112,6 +85,7 @@ const Register: React.FC = () => {
         <Input
           type="email"
           label="Email"
+          name="email"
           placeholder="example@example.com"
           value={formData.email}
           onChange={handleChange}
@@ -120,6 +94,7 @@ const Register: React.FC = () => {
         <Input
           type="password"
           label="Password"
+          name="password"
           placeholder="strong password"
           value={formData.password}
           onChange={handleChange}
@@ -127,14 +102,13 @@ const Register: React.FC = () => {
         />
 
         <div className="mt-6">
-          <Button variant="primary" fullWidth type="submit">
-            Continue
+          <Button disabled={loading} variant="primary" fullWidth type="submit">
+            
+            {loading ? "Creating account..." : "Continue"}
+
           </Button>
         </div>
       </form>
-
-      {/* {error && <p className="text-red-500 text-sm mb-4">{error}</p>} */}
-      {/* {success && <p className="text-green-500 text-sm mb-4">{success}</p>} */}
 
       <div className="text-center mt-6">
         <span className="text-sm text-gray-600">Already have an account? </span>
@@ -158,7 +132,7 @@ const Register: React.FC = () => {
 
       <div className="mt-4 space-y-3 hover:cursor-pointer">
         <Button
-        onClick={()=> redirectToProvider('google')}
+          onClick={() => redirectToProvider("google")}
           variant="social"
           fullWidth
           icon={
@@ -192,8 +166,7 @@ const Register: React.FC = () => {
         </Button>
 
         <Button
-                onClick={()=> redirectToProvider('facebook')}
-
+          onClick={() => redirectToProvider("facebook")}
           variant="social"
           fullWidth
           icon={

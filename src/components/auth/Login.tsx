@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 import CheckBox from "../../ui/CheckBox";
+import axiosInstance from "../../utils/axios";
+import { notifySuccess } from "../../utils/toast";
+import { useUserStore } from "../../store/useUserStore";
 
 interface LoginFormData {
   email: string;
@@ -17,9 +20,13 @@ const Login: React.FC = () => {
     remember: false,
   });
 
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
+  //
+    const setUser = useUserStore( state => state.setUser)
+  
+
+
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -31,35 +38,25 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Form validation
-    if (!formData.email || !formData.password) {
-      setError("All fields are required.");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
     setLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       // Simulate API call
-      console.log("Form submitted:", formData);
-      setSuccess("Login successful! Redirecting...");
-      setTimeout(() => {
-        setSuccess("");
-        // Navigate to the home page or dashboard
-      }, 2000);
-    } catch (err:any) {
+      const response = await axiosInstance.post("/login", formData);
+      const data = response.data;
+
+      // Save token
+      localStorage.setItem("token", data.token);
+
+      setUser(data.user,data.token)
+
+      // Notify success
+      notifySuccess("Successfully logged in!");
+
+      // Redirect to tournaments page
+      navigate("/");
+    } catch (err: any) {
       console.log(err);
-      
-      setError("Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -120,8 +117,6 @@ const Login: React.FC = () => {
       </form>
 
       {/* Error and Success Messages */}
-      {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
-      {success && <p className="text-green-500 text-sm mt-4">{success}</p>}
 
       {/* Sign up link */}
       <div className="text-center mt-6">
