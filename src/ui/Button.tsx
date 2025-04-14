@@ -7,6 +7,7 @@ interface ButtonProps {
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
   icon?: React.ReactNode;
+  disabled?:boolean
 }
 
 const Button: React.FC<ButtonProps> = ({ 
@@ -15,6 +16,7 @@ const Button: React.FC<ButtonProps> = ({
   fullWidth = false, 
   onClick, 
   type = 'button',
+  disabled = false,
   icon
 }) => {
   const baseClasses = "inline-flex justify-center items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none transition-colors duration-300  hover:cursor-pointer";
@@ -32,6 +34,7 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       className={`${baseClasses} ${variantClasses[variant]} ${widthClass}`}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
       {icon && <span className="ml-2">{icon}</span>}

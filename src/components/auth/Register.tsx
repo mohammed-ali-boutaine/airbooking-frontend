@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import { Mail, Lock, UserPlus, User } from "lucide-react";
 // import { postRequest } from "../../utils/services";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
 import Input from "../../ui/Input";
 // import { handleApiError } from "../../utils/api";
@@ -13,11 +13,25 @@ interface RegisterFormData {
 }
 
 const Register: React.FC = () => {
+
+  // form data state
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
     password: "",
   });
+
+  // errors and loading
+    const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
+    const navigate = useNavigate();
+
+
+
+
+
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,12 +41,12 @@ const Register: React.FC = () => {
     });
   };
 
-  // const [error, setError] = useState("");
-  // const [success, setSuccess] = useState("");
-  // const navigate = useNavigate();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
+    console.log(formData);
+    
     // if (!validateForm()) return;
 
     // try {
@@ -81,7 +95,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="border-[var(--main-border)] border  max-w-md mt-10 mb-10 rounded-2xl mx-auto p-8 bg-white shadow-sm borderfont-sans">
-      <h2 className="text-[var(--primary-color)]  text-2xl font-bold mb-8 ">
+      <h2 className="text-[var(--primary-color)]  text-2xl font-bold mb-4 ">
         Create an Account
       </h2>
 
