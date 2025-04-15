@@ -3,7 +3,7 @@ import React from "react";
 interface CheckBoxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   checked: boolean;
-  id: string; // make id required so it always links correctly
+  id: string; 
 }
 
 const CheckBox: React.FC<CheckBoxProps> = ({

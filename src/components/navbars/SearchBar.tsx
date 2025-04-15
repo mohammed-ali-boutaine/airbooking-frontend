@@ -120,7 +120,7 @@ const SearchBar: React.FC = () => {
   // Collapsed compact search bar
   if (!isExpanded) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center ">
         <div 
           className="flex items-center border border-[var(--main-border)] rounded-full  bg-white cursor-pointer p-1  "
           onClick={handleExpandSearch}
