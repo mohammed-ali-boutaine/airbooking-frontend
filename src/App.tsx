@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./components/auth/Login";
 import RoomForm from "./components/room/RoomForm";
 import NotFound from "./components/static/NotFound";
-import Home from "./pages/Home";
+import HomePage from "./pages/HomePage";
 
 // import Navbar from "./components/static/NavBar";
 import HotelForm from "./components/hotel/HotelForm";
@@ -34,7 +34,7 @@ const App: React.FC = () => {
         {user && <p>Welcome, {user.name}</p>}
       </div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/create-room" element={<RoomForm />} />
         <Route path="/create-hotel" element={<HotelForm />} />
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}

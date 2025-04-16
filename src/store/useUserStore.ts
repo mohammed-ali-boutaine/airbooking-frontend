@@ -24,7 +24,7 @@ type Store = {
 let cachedToken: string | null = localStorage.getItem("token");
 
 export const useUserStore = create<Store>((set) => ({
-  user: JSON.parse(localStorage.getItem("user") || "null"),
+  user: null,
   token: cachedToken,
   loading: true,
   error: null,
@@ -32,7 +32,7 @@ export const useUserStore = create<Store>((set) => ({
   setUser: (user, token) => {
     cachedToken = token;
     localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.setItem("user", JSON.stringify(user));
     set({ user, token, error: null });
   },
 
@@ -53,7 +53,7 @@ export const useUserStore = create<Store>((set) => ({
     } catch (error) {
       console.error("Token invalid or expired", error);
       localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      // localStorage.removeItem("user");
       cachedToken = null;
       set({
         user: null,
@@ -66,7 +66,7 @@ export const useUserStore = create<Store>((set) => ({
 
   logout: () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // localStorage.removeItem("user");
     cachedToken = null;
     set({ user: null, token: null, error: null });
   },
