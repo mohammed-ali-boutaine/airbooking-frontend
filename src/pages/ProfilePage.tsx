@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import UserProfileSection from './UserProfileSection';
-import { useUserStore } from "../../store/useUserStore";
+import UserProfileSection from '../components/UserProfileSection';
+import { useUserStore } from "../store/useUserStore";
+import MainNav from '../components/navbars/MainNav';
+
+// interface UserProfileData {
+//      id: string;
+//      name: string;
+//      email: string;
+//      address?: string;
+//      profileImage?: string;
+//    }
 
 // You would typically fetch this data from your API or user store
 const ProfilePage: React.FC = () => {
@@ -24,7 +33,9 @@ const ProfilePage: React.FC = () => {
           // const userData = response.data;
           // setUser(userData);
           setIsLoading(false);
-        } catch (err) {
+        } catch (err : any) {
+          console.log(err);
+          
           setError('Failed to load profile data. Please try again later.');
           setIsLoading(false);
         }
@@ -35,8 +46,10 @@ const ProfilePage: React.FC = () => {
   }, [user]);
   
   // Handle saving profile changes
-  const handleSaveProfile = async (updatedData: Partial<typeof user>) => {
+  const handleSaveProfile = async (updatedData: Partial<any>) => {
     try {
+     console.log(updatedData);
+     
       // Call your API to update the user data
       // Example: await api.updateUserProfile(updatedData);
       
@@ -53,6 +66,8 @@ const ProfilePage: React.FC = () => {
   // Handle password changes
   const handlePasswordChange = async (oldPassword: string, newPassword: string) => {
     try {
+     console.log(oldPassword,newPassword);
+     
       // Call your API to change the password
       // Example: await api.changePassword(oldPassword, newPassword);
       return Promise.resolve();
@@ -79,9 +94,9 @@ const ProfilePage: React.FC = () => {
       </div>
     );
   }
-  
+
   // Mock user data for this example (replace with your actual user from store)
-  const mockUser = user || {
+  const mockUser =  {
     id: "1",
     name: "John Doe",
     email: "johndoe@example.com",
@@ -90,8 +105,11 @@ const ProfilePage: React.FC = () => {
   };
   
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">My Profile</h1>
+
+    <>
+    <MainNav />
+        <div className="container mx-auto py-8 px-4">
+      {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">My Profile</h1> */}
       
       <UserProfileSection 
         userData={mockUser}
@@ -99,6 +117,8 @@ const ProfilePage: React.FC = () => {
         onPasswordChange={handlePasswordChange}
       />
     </div>
+    </>
+
   );
 };
 

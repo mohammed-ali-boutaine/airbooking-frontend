@@ -1,4 +1,5 @@
 import React from 'react';
+import MainNav from '../navbars/MainNav';
 
 type Sale = {
   id: number;
@@ -23,7 +24,11 @@ const OwnerHome: React.FC = () => {
   const totalSales = sales.reduce((sum, sale) => sum + (sale.status === 'Completed' ? sale.amount : 0), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+
+    <>
+
+    <MainNav/>
+        <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
@@ -95,6 +100,8 @@ const OwnerHome: React.FC = () => {
         </div>
       </main>
     </div>
+    </>
+
   );
 };
 

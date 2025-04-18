@@ -100,7 +100,9 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
       setTimeout(() => {
         setFeedback({ type: '', message: '' });
       }, 3000);
-    } catch (error) {
+    } catch (error : any) {
+      console.log(error);
+      
       setFeedback({
         type: 'error',
         message: `Failed to update ${field}. Please try again.`
@@ -135,7 +137,9 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
       setTimeout(() => {
         setFeedback({ type: '', message: '' });
       }, 3000);
-    } catch (error) {
+    } catch (error :any) {
+      console.log(error);
+
       setFeedback({
         type: 'error',
         message: 'Failed to update password. Please check your current password and try again.'
@@ -186,6 +190,8 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
         };
         reader.readAsDataURL(file);
       } catch (error) {
+        console.log(error);
+
         setFeedback({
           type: 'error',
           message: 'Failed to update profile picture. Please try again.'

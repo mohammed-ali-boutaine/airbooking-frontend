@@ -1,22 +1,24 @@
 // store/useUserStore.ts
+
+import { UserType } from "../types";
 import { create } from "zustand";
 import axiosInstance from "../utils/axios";
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  created_at: string;
-  updated_at: string;
-};
+// type User = {
+//   id: number;
+//   name: string;
+//   email: string;
+//   role: string;
+//   created_at: string;
+//   updated_at: string;
+// };
 
 type Store = {
-  user: User | null;
+  user: UserType | null;
   token: string | null;
   loading: boolean;
   error: string | null;
-  setUser: (user: User, token: string) => void;
+  setUser: (user: UserType, token: string) => void;
   fetchUserFromToken: () => Promise<void>;
   logout: () => void;
 };
@@ -45,10 +47,10 @@ export const useUserStore = create<Store>((set) => ({
     set({ loading: true, error: null });
 
     try {
-      const response = await axiosInstance.get<User>("/api/me");
+      const response = await axiosInstance.get<UserType>("/me");
       console.log("user from api", response.data);
 
-      const user = response.data;
+      const user = response.data.user;
       set({ user, token: cachedToken, loading: false });
     } catch (error) {
       console.error("Token invalid or expired", error);

@@ -25,7 +25,7 @@ const HomePage: React.FC = () => {
       return <ClientHome />;
 
     default:
-      return <div>Role not recognized</div>;
+      return <ClientHome/>
   }
 
 };

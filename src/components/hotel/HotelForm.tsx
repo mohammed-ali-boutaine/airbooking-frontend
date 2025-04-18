@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 
 const HotelForm = () => {
     const [formData, setFormData] = useState({
@@ -12,37 +12,38 @@ const HotelForm = () => {
         cover_path: null,
     });
 
-    const handleChange = (e) => {
+    const handleChange = (e:any) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = (e:any) => {
         const { name, files } = e.target;
         setFormData({ ...formData, [name]: files[0] });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e:any) => {
         e.preventDefault();
 
-        const formDataToSend = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-            formDataToSend.append(key, value);
-        });
+        // const formDataToSend = new FormData();
+        // Object.entries(formData).forEach(([key, value]) => {
+        //     formDataToSend.append(key, value);
+        // });
+console.log(formData);
 
-        try {
-            const response = await axios.post("http://127.0.0.1:8000/api/hotels", formDataToSend, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer YOUR_AUTH_TOKEN`,
-                },
-            });
+        // try {
+        //     const response = await axios.post("http://127.0.0.1:8000/api/hotels", formDataToSend, {
+        //         headers: {
+        //             "Content-Type": "multipart/form-data",
+        //             Authorization: `Bearer YOUR_AUTH_TOKEN`,
+        //         },
+        //     });
 
-            alert("Hotel created successfully!");
-            console.log(response.data);
-        } catch (error) {
-            console.error("Error creating hotel:", error);
-        }
+        //     alert("Hotel created successfully!");
+        //     console.log(response.data);
+        // } catch (error) {
+        //     console.error("Error creating hotel:", error);
+        // }
     };
 
     return (

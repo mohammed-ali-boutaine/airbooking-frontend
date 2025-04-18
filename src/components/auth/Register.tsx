@@ -6,6 +6,7 @@ import { redirectToProvider } from "../../utils/redirect";
 import axiosInstance from "../../utils/axios";
 import { notifyError, notifySuccess } from "../../utils/toast";
 import { useUserStore } from "../../store/useUserStore";
+import MainNav from "../navbars/MainNav";
 interface RegisterFormData {
   name: string;
   email: string;
@@ -67,6 +68,10 @@ const Register: React.FC = () => {
   };
 
   return (
+    <>
+
+    <MainNav/>
+
     <div className="border-[var(--main-border)] border  max-w-md mt-10 mb-10 rounded-2xl mx-auto p-8 bg-white shadow-sm borderfont-sans">
       <h2 className="text-[var(--primary-color)]  text-2xl font-bold mb-4 ">
         Create an Account
@@ -200,6 +205,8 @@ const Register: React.FC = () => {
         </p>
       </div>
     </div>
+    </>
+
   );
 };
 

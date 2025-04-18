@@ -1,8 +1,10 @@
-export interface User {
-  id: string;
+export type UserType = {
+  id: number;
   name: string;
   email: string;
-  role: "admin" | "user";
+  role: "admin" | "client" | 'owner' | 'super-admin';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Hotel {
@@ -28,5 +30,5 @@ export interface ApiResponse<T> {
 
 export interface AuthResponse {
   token: string;
-  user: User;
+  user: UserType;
 }

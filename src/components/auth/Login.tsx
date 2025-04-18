@@ -7,6 +7,7 @@ import axiosInstance from "../../utils/axios";
 import { notifySuccess } from "../../utils/toast";
 import { useUserStore } from "../../store/useUserStore";
 import { redirectToProvider } from "../../utils/redirect";
+import MainNav from "../navbars/MainNav";
 
 interface LoginFormData {
   email: string;
@@ -64,6 +65,9 @@ const Login: React.FC = () => {
   };
 
   return (
+
+    <>
+    <MainNav/>
     <div className="border-[var(--main-border)] border max-w-md mt-10 rounded-2xl mx-auto p-8 bg-white shadow-sm font-sans mb-24">
       <h2 className="text-[var(--primary-color)] text-2xl font-bold mb-4">
         Welcome Back
@@ -214,6 +218,8 @@ const Login: React.FC = () => {
         </p>
       </div>
     </div>
+    </>
+
   );
 };
 
