@@ -1,5 +1,6 @@
 import React from 'react';
 import MainNav from '../navbars/MainNav';
+import ClientNavBar from '../navbars/ClientNavBar';
 
 // type Product = {
 //   id: number;
@@ -17,7 +18,7 @@ const ClientHome: React.FC = () => {
   return (
 
     <>
-    <MainNav />
+    <ClientNavBar />
     Client
     </>
   )

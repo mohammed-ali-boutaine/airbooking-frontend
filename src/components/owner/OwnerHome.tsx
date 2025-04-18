@@ -27,7 +27,7 @@ const OwnerHome: React.FC = () => {
 
     <>
 
-    <MainNav/>
+    {/* <MainNav/> */}
         <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow">

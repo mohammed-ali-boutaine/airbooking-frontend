@@ -1,9 +1,9 @@
-import AdminNavbar from "../components/navbar/AdminNavbar";
+import ClientNavBar from "../components/navbars/ClientNavBar";
 
 const ClientLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div>
-      <AdminNavbar />
+      <ClientNavBar />
       <main>{children}</main>
     </div>
   );

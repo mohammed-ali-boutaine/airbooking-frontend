@@ -1,25 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
-import Button from "../../ui/Button";
-import logo from "../../assets/logo.png";
+import Button from "../static//Button";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { useUserStore } from "../../store/useUserStore";
 
 
 import ProfileHeader from "./ProfileHeader";
-// import { UserType } from "../../types";
-
-// ProfileHeader component
+import Logo from "../static/Logo";
 
 
-const MainNav: React.FC = () => {
-  // const fetchUserFromToken = useUserStore((state) => state.fetchUserFromToken);
-// console.log(user);
+
+const ClientNavBar: React.FC = () => {
+
 
 const user = useUserStore((state) => state.user);
 const loading = useUserStore((state) => state.loading);
 
-// console.log(user);
 
 
 
@@ -45,9 +41,7 @@ const loading = useUserStore((state) => state.loading);
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/">
-              <img width="144" height="35" src={logo} alt="airbooking-logo" />
-            </Link>
+            <Logo/>
           </div>
 
           <div className="hidden md:block flex-grow mx-8">
@@ -138,4 +132,4 @@ const loading = useUserStore((state) => state.loading);
   )
 };
 
-export default MainNav;
+export default ClientNavBar;
