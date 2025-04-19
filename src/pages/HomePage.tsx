@@ -9,9 +9,10 @@ import OwnerHome from "../components/owner/OwnerHome";
 const HomePage: React.FC = () => {
 
 
-  const { user, loading } = useUserStore();
+  const { user } = useUserStore();
 
-  if (loading) return <div>Loading...</div>;
+  // if (loading) return <div>Loading...</div>;
+// console.log(user);
 
   if(!user) return <ClientHome/>
 

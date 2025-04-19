@@ -1,13 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
-import HomePage from "./pages/HomePage";
+// import HomePage from "./pages/HomePage";
 import "./index.css";
 
 // import HotelForm from "./components/hotel/HotelForm";
 // import CreateHotel from "./components/hotel/CreateHotel";
 // import ProfilePage from "./pages/ProfilePage";
 import AuthLayout from "./layouts/AuthLayout";
+// import AdminLayout from "./layouts/AdminLayout";
+// import AdminHome from "./components/admin/AdminHome";
+// import AdminHomePage from "./pages/admin/AdminHomePage";
+import OwnerLayout from "./layouts/OwnerLayout";
+import OwnerHome from "./components/owner/OwnerHome";
 
 const App: React.FC = () => {
   return (
@@ -22,7 +27,12 @@ const App: React.FC = () => {
 
         {/* <Route path="/*" element={<RoleBasedRoutes />} /> */}
 
-        <Route path="/" element={<HomePage />} />
+        {/* <Route path="/" element={<HomePage />} /> */}
+
+        <Route path="/" element={<OwnerLayout />}>
+        <Route index element={<OwnerHome />} />
+        {/* <Route path="users" element={<ManageUsers />} /> */}
+      </Route>
         {/* <Route path="/create-room" element={<RoomForm />} /> */}
         {/* <Route path="/create-hotel" element={<HotelForm />} /> */}
         {/* <Route path="/create-hotell" element={<CreateHotel />} /> */}
@@ -32,7 +42,6 @@ const App: React.FC = () => {
         {/* <Route path="/profile" element={<ProfilePage />} /> */}
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
-      {/* <Footer /> */}
     </Router>
   );
 };

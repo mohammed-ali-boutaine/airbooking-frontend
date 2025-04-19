@@ -1,5 +1,5 @@
 import React from 'react';
-import MainNav from '../navbars/MainNav';
+// import MainNav from '../navbars/MainNav';
 import ClientNavBar from '../navbars/ClientNavBar';
 
 // type Product = {

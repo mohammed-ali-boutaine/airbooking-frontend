@@ -17,42 +17,64 @@ type Store = {
   logout: () => void;
 };
 
-let cachedToken: string | null = localStorage.getItem("token");
-
+const getInitialToken = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem("token");
+  }
+  return null;
+};
 export const useUserStore = create<Store>((set) => ({
   user: null,
-  token: cachedToken,
+  token: getInitialToken(),
   loading: true,
   error: null,
 
   setUser: (user, token) => {
-    cachedToken = token;
+    // cachedToken = token;
     localStorage.setItem("token", token);
-    set({ user, token, error: null });
+    set({ user, token, error: null,loading:false });
   },
 
   fetchUserFromToken: async () => {
-    if (!cachedToken) return set({ loading: false });
+    // if (!cachedToken) return set({ loading: false });
+    const token = getInitialToken();
+    if (!token) {
+      set({ loading: false });
+      return;
+    }
+
 
     try {
+      set({  loading: true, error: null  });
       const response = await axiosInstance.get<ApiResponse>("/me");
-      const user = response.data.user;
-      set({ user, loading: false });
-    } catch {
+      console.log(response);
+      
+      // const user = response.data.user;
+      set({ 
+        user: response.data.user,
+        token,
+        loading: false
+      });
+
+
+    } catch (error) {
       // console.error("Token invalid or expired", error);
+      console.error("Fetch user error:", error); // Add this
+
       localStorage.removeItem("token");
-      cachedToken = null;
+      // cachedToken = null;
       set({
         user: null,
         token: null,
         loading: false,
+        error: error instanceof Error ? error.message : "Failed to fetch user"
       });
     }
   },
 
   logout: () => {
     localStorage.removeItem("token");
-    cachedToken = null;
-    set({ user: null, token: null, error: null });
+    // cachedToken = null;
+    set({ user: null, token: null, error: null, loading: false });
   },
 }));
