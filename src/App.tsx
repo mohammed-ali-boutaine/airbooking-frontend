@@ -13,6 +13,7 @@ import AuthLayout from "./layouts/AuthLayout";
 // import AdminHomePage from "./pages/admin/AdminHomePage";
 import OwnerLayout from "./layouts/OwnerLayout";
 import OwnerHome from "./components/owner/OwnerHome";
+import HotelForm from "./components/hotel/HotelForm";
 
 const App: React.FC = () => {
   return (
@@ -21,20 +22,26 @@ const App: React.FC = () => {
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          {/* <Route path="/forgot-password" element={<ForgotPasswordPage />} /> */}
 
         </Route>
 
-        {/* <Route path="/*" element={<RoleBasedRoutes />} /> */}
 
-        {/* <Route path="/" element={<HomePage />} /> */}
-
-        <Route path="/" element={<OwnerLayout />}>
+      {/* <Route path="/" element={<OwnerLayout />}>
+        <Route  path="hotels/add" element={<HotelForm />}>
         <Route index element={<OwnerHome />} />
-        {/* <Route path="users" element={<ManageUsers />} /> */}
-      </Route>
+      </Route> */}
+
+
+      <Route path="/" element={<OwnerLayout />}>
+          <Route path="hotels/add" element={<HotelForm />} />
+          <Route index element={<OwnerHome />} />
+        </Route>
+
+
+
         {/* <Route path="/create-room" element={<RoomForm />} /> */}
         {/* <Route path="/create-hotel" element={<HotelForm />} /> */}
+        {/* <Route path="users" element={<ManageUsers />} /> */}
         {/* <Route path="/create-hotell" element={<CreateHotel />} /> */}
         {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         {/* <Route path="/login" element={<Login />} /> */}

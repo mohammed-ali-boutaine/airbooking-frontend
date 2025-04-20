@@ -60,9 +60,10 @@ const OwnerLayout = () => {
                   />
                 </svg>
               </button>
-              <Link to="/owner/dashboard" className="flex items-center">
+              {/* <Link to="/" className="flex items-center"> */}
+              
                 <Logo />
-              </Link>
+              {/* </Link> */}
             </div>
 
             {/* Profile Section */}
@@ -77,7 +78,7 @@ const OwnerLayout = () => {
                     alt="Profile"
                     className="object-cover w-full h-full"
                     onError={(e) => {
-                      e.currentTarget.src = "https://via.placeholder.com/40";
+                      e.currentTarget.src = "https://placehold.co/40";
                     }}
                   />
                 </div>
