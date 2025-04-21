@@ -56,10 +56,10 @@ const OwnerNavBar = () => {
                 />
               </svg>
             </button>
-            <Link to="/owner/dashboard" className="flex items-center">
-              <Logo />
+            {/* <Link to="/owner/dashboard" className="flex items-center"> */}
+              <Logo  to="/owner"/>
             
-            </Link>
+            {/* </Link> */}
           </div>
           
           {/* Profile Section */}

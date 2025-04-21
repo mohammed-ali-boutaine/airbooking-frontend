@@ -1,9 +1,9 @@
-import { Outlet } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
 
-const AdminLayout = () => (
+const AdminLayout = ({ children }: { children: React.ReactNode }) => (
   <div>
     <nav>Admin Navbar</nav>
-    <Outlet />
+    {children}
   </div>
 );
 

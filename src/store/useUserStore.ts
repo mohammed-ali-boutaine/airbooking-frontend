@@ -32,6 +32,8 @@ export const useUserStore = create<Store>((set) => ({
   setUser: (user, token) => {
     // cachedToken = token;
     localStorage.setItem("token", token);
+    console.log(user);
+    
     set({ user, token, error: null,loading:false });
   },
 

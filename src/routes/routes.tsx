@@ -1,40 +1,43 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useUserStore } from "../store/useUserStore";
-import Login from "../components/auth/Login";
+import { createBrowserRouter } from "react-router-dom";
+import OwnerLayout from "../layouts/OwnerLayout";
+import HotelForm from "../components/hotel/HotelForm";
+import ClientLayout from "../layouts/ClientLayout";
+import ClientHome from "../components/client/ClientHome";
+import LoginPage from "../pages/auth/LoginPage";
 
-function App() {
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
 
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/owner"
-        element={
-          <ProtectedRoute allowedRoles={["owner"]}>
-            <OwnerPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/client"
-        element={
-          <ProtectedRoute allowedRoles={["client", "admin", "owner"]}>
-            <ClientPage />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
-  );
-}
-export default App;
+export const rouets = createBrowserRouter([
+  {
+    element: <OwnerLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        // element: <DashboardHome/>
+      },
+      {
+        path: "/dashboard/clients",
+        // element: <Users/>
+      },
+      {
+        path: "/create-hotel",
+        element: <HotelForm />,
+      },
+    ],
+  },
+  {
+    element: <ClientLayout />,
+    children: [
+      {
+        path: "/",
+        element: <ClientHome />,
+      },
+      {
+        path:"/register",
+        // element : 
+      },{
+        path : '/login',
+        element : <LoginPage/>
+      }
+    ],
+  },
+]);

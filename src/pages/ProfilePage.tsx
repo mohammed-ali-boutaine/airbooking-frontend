@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import UserProfileSection from '../components/UserProfileSection';
 import { useUserStore } from "../store/useUserStore";
-import MainNav from '../components/navbars/MainNav';
+// import ClientNavBar from '../components/navbars/ClientNavBar';
+// import { UserType } from '../types';
+// import MainNav from '../components/navbars/MainNav';
 
 // interface UserProfileData {
 //      id: string;
@@ -16,7 +18,7 @@ const ProfilePage: React.FC = () => {
   const user = useUserStore((state) => state.user);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+  // const [userData, setUserData] = useState<UserType>();
   // Simulate loading user data if needed
   useEffect(() => {
     if (user) {
@@ -26,22 +28,22 @@ const ProfilePage: React.FC = () => {
       setIsLoading(true);
       
       // Example of fetching user data
-      const fetchUserData = async () => {
-        try {
-          // Replace with your actual API call
-          // const response = await api.getUserProfile();
-          // const userData = response.data;
-          // setUser(userData);
-          setIsLoading(false);
-        } catch (err : any) {
-          console.log(err);
+      // const fetchUserData = async () => {
+      //   try {
+      //     // Replace with your actual API call
+      //     // const response = await api.getUserProfile();
+      //     // const userData = response.data;
+      //     userData(user);
+      //     setIsLoading(false);
+      //   } catch (err : any) {
+      //     console.log(err);
           
-          setError('Failed to load profile data. Please try again later.');
-          setIsLoading(false);
-        }
-      };
+      //     setError('Failed to load profile data. Please try again later.');
+      //     setIsLoading(false);
+      //   }
+      // };
       
-      fetchUserData();
+      // fetchUserData();
     }
   }, [user]);
   
@@ -107,7 +109,8 @@ const ProfilePage: React.FC = () => {
   return (
 
     <>
-    <MainNav />
+    {/* <MainNav /> */}
+    {/* <ClientNavBar /> */}
         <div className="container mx-auto py-8 px-4">
       {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">My Profile</h1> */}
       

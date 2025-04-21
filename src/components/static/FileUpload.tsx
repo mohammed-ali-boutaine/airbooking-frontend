@@ -1,4 +1,4 @@
-import React, { useRef, ChangeEvent } from "react";
+import React, { useRef, ChangeEvent, useState } from "react";
 
 interface FileUploadProps {
   label: string;
@@ -10,7 +10,6 @@ interface FileUploadProps {
   required?: boolean;
   multiple?: boolean;
   helperText?: string;
-  className?: string;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -23,10 +22,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
   required = false,
   multiple = false,
   helperText,
-  className,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = React.useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -42,11 +40,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
     fileInputRef.current?.click();
   };
 
+  // const clearFileInput = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.value = '';
+  //   }
+  //   setFileName('');
+  // };
+
   return (
-    <div className={`mb-4 ${className}`}>
+    <div className="mb-4">
       <label
         htmlFor={id}
-        className="block text-sm font-medium text-gray-700 mb-1"
+        className="block text-sm font-medium text-gray-700 mb-2"
       >
         {label} {required && <span className="text-red-500">*</span>}
       </label>
@@ -59,42 +64,45 @@ const FileUpload: React.FC<FileUploadProps> = ({
           name={name}
           accept={accept}
           onChange={handleFileChange}
-          className="sr-only"
+          className="hidden"
           required={required}
           multiple={multiple}
         />
 
-        <div
+        <button
+          type="button"
           onClick={handleClick}
-          className={`flex items-center justify-between px-4 py-2 border ${
-            error ? "border-red-500" : "border-gray-300"
-          } rounded-md cursor-pointer hover:bg-gray-50 transition-colors`}
+          className={`flex w-full items-center justify-between px-4 py-2 border ${
+            error ? "border-red-300 bg-red-50" : "border-gray-300 bg-white"
+          } rounded-md text-left`}
         >
           <div className="flex items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 mr-2 text-gray-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
               <path
-                fillRule="evenodd"
-                d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                clipRule="evenodd"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
               />
             </svg>
-            <span className="text-gray-500 text-sm truncate">
+            <span
+              className={`${
+                fileName ? "text-gray-900" : "text-gray-500"
+              } truncate max-w-xs`}
+            >
               {fileName || `Choose ${multiple ? "files" : "a file"}`}
             </span>
           </div>
-          <button
-            type="button"
-            className="px-4 py-1 ml-2 text-xs font-medium text-[var(--strong-gray-color)] bg-[var(--main-border)]  rounded hover:bg-indigo-100 transition-colors"
-            onClick={handleClick}
-          >
+          <span className="ml-3 text-sm font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">
             Browse
-          </button>
-        </div>
+          </span>
+        </button>
       </div>
 
       {helperText && !error && (

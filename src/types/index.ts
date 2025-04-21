@@ -1,17 +1,45 @@
+
+
+export type UserRole = 'client' | 'admin' | 'owner' | 'super-admin';
+
 export type UserType = {
   id: number;
   name: string;
   email: string;
-  role: "admin" | "client" | 'owner' | 'super-admin';
+  role: UserRole;
   created_at: string;
   updated_at: string;
 }
 
-export interface Hotel {
-  id: number;
+export interface HotelType {
+  id? : number ;
   name: string;
-  location: string;
-  rooms: number;
+  address: string;
+  city: string;
+  country: string;
+  description: string;
+  tags: number[]; // array if tags ids
+  profile_path: File | null;
+  cover_path: File | null;
+  coordinate: {
+    lat: number;
+    lng: number;
+  };
+  owner_id?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface FormErrors {
+  name?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  tags?: string;
+  description?: string;
+  profile_path?: string;
+  cover_path?: string;
+  coordinate?: string;
 }
 
 export interface Room {
