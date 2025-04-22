@@ -7,13 +7,13 @@ interface Tag {
 }
 
 interface TagSelectorProps {
-  selectedTags: number[];
-  onChange: (selectedTagIds: number[]) => void;
+  selectedTags: Tag[];
+  onChange: (selectedTagIds: number[]) => void; // Changed to expect number[] for consistency
   error?: string;
 }
 
 const TagSelector: React.FC<TagSelectorProps> = ({
-  selectedTags,
+  selectedTags = [],
   onChange,
   error,
 }) => {
@@ -43,11 +43,14 @@ const TagSelector: React.FC<TagSelectorProps> = ({
   }, []);
 
   const handleTagToggle = (tagId: number) => {
-    const updatedSelectedTags = selectedTags.includes(tagId)
-      ? selectedTags.filter((id) => id !== tagId)
-      : [...selectedTags, tagId];
+    const selectedTagIds = selectedTags.map((tag) => tag.id);
+    const isSelected = selectedTagIds.includes(tagId);
 
-    onChange(updatedSelectedTags);
+    const updatedSelectedIds = isSelected
+      ? selectedTagIds.filter((id) => id !== tagId)
+      : [...selectedTagIds, tagId];
+
+    onChange(updatedSelectedIds); // Pass array of ids as expected by onChange
   };
 
   if (isLoading) {
@@ -97,11 +100,11 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             type="button"
             onClick={() => handleTagToggle(tag.id)}
             className={`px-3 py-1 rounded-full text-sm font-medium
-              ${
-                selectedTags.includes(tag.id)
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
+        ${
+          selectedTags.some((selected) => selected.id === tag.id)
+            ? "bg-indigo-600 text-white"
+            : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+        }`}
           >
             {tag.name}
           </button>

@@ -1,19 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/auth/LoginPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import "./index.css";
-
 import AuthLayout from "./layouts/AuthLayout";
 import OwnerLayout from "./layouts/OwnerLayout";
-import HotelForm from "./components/hotel/HotelForm";
-// import OwnerHome from "./components/owner/OwnerHome";
-import ProfilePage from "./pages/ProfilePage";
-// import HotelDashboard from "./components/admin/HotelDashboard";
+// import ClientLayout from "./layouts/ClientLayout";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
 import Homepage from "./pages/HomePage";
 import HotelsPage from "./pages/owner/Hotels";
-// import HotelDetailsPage from "./pages/client/HotelDetails";
+import HotelForm from "./components/hotel/HotelForm";
+import ProfilePage from "./pages/ProfilePage";
 import OwnerHomePage from "./pages/owner/OwnerHomePage";
-// import Homepage from "./pages/Homepage";
+import HotelDetail from "./pages/owner/HotelDetail";
 
 const App: React.FC = () => {
   return (
@@ -35,6 +31,7 @@ const App: React.FC = () => {
           <Route index element={<OwnerHomePage />} />
           <Route path="hotels" element={<HotelsPage />} />
           <Route path="hotels/new" element={<HotelForm />} />
+          <Route path="hotels/:id" element={<HotelDetail />} />
           <Route path="hotels/:id/edit" element={<HotelForm />} />
           <Route path="rooms" element={<ProfilePage />} />
           <Route path="booking" element={<ProfilePage />} />
@@ -42,6 +39,16 @@ const App: React.FC = () => {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
+
+
+
+
+
+
+
+
+
+        
       </Routes>
     </Router>
   );

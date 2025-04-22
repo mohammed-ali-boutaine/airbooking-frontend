@@ -11,6 +11,12 @@ export interface Room {
   images?: Image[];
 }
 
+
+export interface Tag{
+  id:number;
+  name : string;
+  icon_path?:string
+}
 export interface Image {
   id: number;
   path: string;
@@ -30,6 +36,7 @@ export interface Hotel {
   address: string;
   city: string;
   country: string;
+  tags:Tag[];
   description: string;
   coordinate: {
     lat: number;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { HotelType } from '../../types';
 import axiosInstance from '../../utils/axios';
+// import { log } from 'console';
 
 // Define types based on the database schema
 // interface Hotel {
@@ -158,6 +159,8 @@ const HotelList: React.FC<HotelListProps> = ({ onEdit, onDelete }) => {
   const currentItems = filteredHotels.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredHotels.length / itemsPerPage);
 
+
+  console.log(currentItems)
   const renderSortIcon = (field: keyof HotelType) => {
     if (field !== sortField) return null;
     return sortDirection === 'asc' ? '↑' : '↓';
@@ -279,9 +282,13 @@ const HotelList: React.FC<HotelListProps> = ({ onEdit, onDelete }) => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {hotel.profile_path ? (
                         <img 
-                          src={`http://localhost:8000/storage/hotel-info/${hotel.profile_path}`} 
+                          src={`/http://127.0.0.1:8000/storage/${hotel.profile_path}`} 
                           alt={hotel.name}
                           className="h-10 w-10 rounded-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/placeholder-hotel.png'; // Fallback image
+                          }}
                         />
                       ) : (
                         <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">

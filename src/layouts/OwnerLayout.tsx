@@ -8,7 +8,7 @@ import { useUserStore } from "../store/useUserStore";
 const OwnerLayout = () => {
 
 
-  const {user,loading} = useUserStore()
+  const {user} = useUserStore()
 
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);

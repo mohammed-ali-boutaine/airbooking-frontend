@@ -1,7 +1,12 @@
+// import { Tag } from "./hotel";
 
 
 export type UserRole = 'client' | 'admin' | 'owner' | 'super-admin';
-
+export interface Tag{
+  id:number;
+  name : string;
+  icon_path?:string
+}
 export type UserType = {
   id: number;
   name: string;
@@ -18,7 +23,7 @@ export interface HotelType {
   city: string;
   country: string;
   description: string;
-  tags: number[]; // array if tags ids
+  tags: Tag[] ; // array if tags ids
   profile_path: File | null;
   cover_path: File | null;
   coordinate: {

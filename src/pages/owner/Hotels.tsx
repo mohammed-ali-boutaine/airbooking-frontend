@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useParams, Link } from 'react-router-dom';
-// import axios from 'axios';
-import { Hotel } from '../../types/hotel';
-import axiosInstance from '../../utils/axios';
+import React, { useEffect, useState } from "react";
+import { useLocation, useParams, Link } from "react-router-dom";
+import { Hotel } from "../../types/hotel";
+import axiosInstance from "../../utils/axios";
 
 const Hotels: React.FC = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<number | null>(
+    null
+  );
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
   const location = useLocation();
   const { term } = useParams();
 
@@ -15,20 +21,16 @@ const Hotels: React.FC = () => {
     const fetchHotels = async () => {
       try {
         setLoading(true);
-        let url = '/hotels';
-        
-        if (location.pathname.includes('/owner/hotels')) {
-          url = '/owner/hotels';
-        } else if (term) {
-          url = `/hotels/search/${term}`;
-        }
+        const url = "/owner/hotels";
 
         const response = await axiosInstance.get(url);
+        console.log(response.data);
+
         setHotels(response.data.data);
         setError(null);
       } catch (err) {
-        setError('Failed to fetch hotels');
-        console.error('Error fetching hotels:', err);
+        setError("Failed to fetch hotels");
+        console.error("Error fetching hotels:", err);
       } finally {
         setLoading(false);
       }
@@ -37,58 +39,303 @@ const Hotels: React.FC = () => {
     fetchHotels();
   }, [location.pathname, term]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  const handleDelete = async (id: number) => {
+    try {
+      await axiosInstance.delete(`/hotels/${id}`);
+      setHotels(hotels.filter((hotel) => hotel.id !== id));
+      setDeleteConfirmation(null);
+      setNotification({
+        message: "Hotel deleted successfully",
+        type: "success",
+      });
+      console.log("Hotel deleted successfully:", id);
+    } catch (err) {
+      console.error("Error deleting hotel:", err);
+      setNotification({ message: "Failed to delete hotel", type: "error" });
+    }
+  };
+
+  // Automatically hide notification after 3 seconds
+  useEffect(() => {
+    if (notification) {
+      const timer = setTimeout(() => {
+        setNotification(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [notification]);
+
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-xl text-red-600">Error: {error}</div>
+      </div>
+    );
+
+  const isOwner = true;
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {notification && (
+        <div
+          className={`fixed top-4 right-4 p-3 rounded-md shadow-md z-50 max-w-xs transition-opacity duration-300 
+          ${
+            notification.type === "success"
+              ? "bg-green-100 text-green-800 border-l-4 border-green-500"
+              : "bg-red-100 text-red-800 border-l-4 border-red-500"
+          }`}
+        >
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              {notification.type === "success" ? (
+                <svg
+                  className="h-5 w-5 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="h-5 w-5 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              )}
+            </div>
+            <div className="ml-3">
+              <p className="text-sm">{notification.message}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <button
+                className="inline-flex text-gray-500 hover:text-gray-700 focus:outline-none"
+                onClick={() => setNotification(null)}
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
-          {location.pathname.includes('/owner/hotels') ? 'My Hotels' : 'All Hotels'}
+          {isOwner ? "My Hotels" : "All Hotels"}
         </h1>
-        {location.pathname.includes('/owner/hotels') && (
+        {isOwner && (
           <Link
             to="/owner/hotels/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
           >
             Add New Hotel
           </Link>
         )}
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      {/* Responsive grid: 1 column on small screens, 2 on medium, 3 on large */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {hotels.map((hotel) => (
-          <div key={hotel.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-            {hotel.cover_path && (
-              <img 
-                src={hotel.cover_path} 
-                alt={hotel.name} 
-                className="w-full h-48 object-cover"
-              />
-            )}
-            <div className="p-4">
-              <h2 className="text-xl font-semibold mb-2">{hotel.name}</h2>
-              <p className="text-gray-600 mb-2">{hotel.city}, {hotel.country}</p>
-              <p className="text-gray-700 mb-4">{hotel.description}</p>
-              <div className="flex justify-between items-center">
-                <Link 
-                  to={`/hotels/${hotel.id}`}
-                  className="text-blue-600 hover:text-blue-800"
+          <div
+            key={hotel.id}
+            className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 w-full relative"
+          >
+            {/* Edit and Delete buttons */}
+            {isOwner && (
+              <div className="absolute top-2 right-2 flex gap-2 z-10">
+                <Link
+                  to={`/owner/hotels/${hotel.id}/edit`}
+                  className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition duration-300 hover:scale-110"
                 >
-                  View Details
-                </Link>
-                {location.pathname.includes('/owner/hotels') && (
-                  <Link
-                    to={`/owner/hotels/${hotel.id}/edit`}
-                    className="text-green-600 hover:text-green-800"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    Edit
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </Link>
+                <button
+                  onClick={() =>
+                    setDeleteConfirmation(
+                      deleteConfirmation === hotel.id ? null : hotel.id
+                    )
+                  }
+                  className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition duration-300 hover:scale-110"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+
+            {/* Hotel Image with hover zoom effect */}
+            <div className="overflow-hidden">
+              {hotel.cover_path ? (
+                <img
+                  src={`http://127.0.0.1:8000/storage/${hotel.profile_path}`}
+                  alt={hotel.name}
+                  className="w-full h-64 object-cover transition-transform duration-500 hover:scale-110"
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">No image available</span>
+                </div>
+              )}
+            </div>
+
+            <div className="p-5">
+              <h2 className="text-lg font-semibold mb-1 hover:text-blue-600 transition-colors duration-300">
+                {hotel.name}
+              </h2>
+              <p className="text-gray-600 text-sm mb-1">
+                <span className="inline-block mr-1">📍</span>
+                {hotel.city}, {hotel.country}
+              </p>
+              <p className="text-gray-700 text-sm mb-3 line-clamp-2">
+                {hotel.description}
+              </p>
+
+              <div className="mt-4">
+                {/* Side-by-side buttons instead of stacked */}
+                <div className="flex gap-2">
+                  <Link
+                    to={`/owner/hotels/${hotel.id}`}
+                    className="flex-1 py-2 px-3 text-center border border-gray-300 rounded-md hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 text-gray-700 flex items-center justify-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    Details
                   </Link>
+
+                  {isOwner && (
+                    <Link
+                      to={`/owner/hotels/${hotel.id}/rooms`}
+                      className="flex-1 py-2 px-3 text-center border border-gray-300 rounded-md hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 text-gray-700 flex items-center justify-center"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                        />
+                      </svg>
+                      Rooms
+                    </Link>
+                  )}
+                </div>
+
+                {/* Delete confirmation */}
+                {deleteConfirmation === hotel.id && (
+                  <div className="flex gap-2 mt-2 w-full">
+                    <button
+                      onClick={() => handleDelete(hotel.id)}
+                      className="flex-1 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition duration-300 text-sm flex items-center justify-center"
+                    >
+                      Confirm Delete
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirmation(null)}
+                      className="flex-1 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition duration-300 text-sm flex items-center justify-center"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
           </div>
         ))}
+
+        {hotels.length === 0 && (
+          <div className="col-span-full text-center py-10">
+            <p className="text-gray-500 text-lg">No hotels found</p>
+            {isOwner && (
+              <Link
+                to="/owner/hotels/new"
+                className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
+              >
+                Add Your First Hotel
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

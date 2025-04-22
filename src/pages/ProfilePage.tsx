@@ -20,6 +20,16 @@ const ProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // const [userData, setUserData] = useState<UserType>();
   // Simulate loading user data if needed
+
+  const mockUser =  {
+    id: "1",
+    name: "John Doe",
+    email: "johndoe@example.com",
+    address: "123 Main St, Anytown, USA",
+    profileImage: ""
+  };
+
+
   useEffect(() => {
     if (user) {
       setIsLoading(false);
@@ -98,13 +108,7 @@ const ProfilePage: React.FC = () => {
   }
 
   // Mock user data for this example (replace with your actual user from store)
-  const mockUser =  {
-    id: "1",
-    name: "John Doe",
-    email: "johndoe@example.com",
-    address: "123 Main St, Anytown, USA",
-    profileImage: ""
-  };
+
   
   return (
 
@@ -115,7 +119,7 @@ const ProfilePage: React.FC = () => {
       {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">My Profile</h1> */}
       
       <UserProfileSection 
-        userData={mockUser}
+        userData={user}
         onSave={handleSaveProfile}
         onPasswordChange={handlePasswordChange}
       />

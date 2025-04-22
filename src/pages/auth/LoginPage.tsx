@@ -50,7 +50,8 @@ const LoginPage = () => {
       notifySuccess("Successfully logged in!");
 
       // Redirect to tournaments page
-      navigate("/");
+      const role = data.user.role;
+      navigate(`/${role}`);
     } catch (err: any) {
       console.log(err);
     } finally {
