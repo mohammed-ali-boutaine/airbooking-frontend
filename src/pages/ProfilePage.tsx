@@ -1,122 +1,91 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import UserProfileSection from '../components/UserProfileSection';
 import { useUserStore } from "../store/useUserStore";
-// import ClientNavBar from '../components/navbars/ClientNavBar';
-// import { UserType } from '../types';
-// import MainNav from '../components/navbars/MainNav';
 
-// interface UserProfileData {
-//      id: string;
-//      name: string;
-//      email: string;
-//      address?: string;
-//      profileImage?: string;
-//    }
-
-// You would typically fetch this data from your API or user store
 const ProfilePage: React.FC = () => {
-  const user = useUserStore((state) => state.user);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, loading, updateUser } = useUserStore();
   const [error, setError] = useState<string | null>(null);
-  // const [userData, setUserData] = useState<UserType>();
-  // Simulate loading user data if needed
-
-  const mockUser =  {
-    id: "1",
-    name: "John Doe",
-    email: "johndoe@example.com",
-    address: "123 Main St, Anytown, USA",
-    profileImage: ""
-  };
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
 
   useEffect(() => {
-    if (user) {
-      setIsLoading(false);
-    } else {
-      // If you need to fetch the user data
-      setIsLoading(true);
-      
-      // Example of fetching user data
-      // const fetchUserData = async () => {
-      //   try {
-      //     // Replace with your actual API call
-      //     // const response = await api.getUserProfile();
-      //     // const userData = response.data;
-      //     userData(user);
-      //     setIsLoading(false);
-      //   } catch (err : any) {
-      //     console.log(err);
-          
-      //     setError('Failed to load profile data. Please try again later.');
-      //     setIsLoading(false);
-      //   }
-      // };
-      
-      // fetchUserData();
-    }
-  }, [user]);
-  
-  // Handle saving profile changes
-  const handleSaveProfile = async (updatedData: Partial<any>) => {
+    console.log(user);
+    useUserStore.getState().fetchUserFromToken();
+    
+  }, []);
+
+
+  const handleSaveProfile = async (updatedData: Partial<typeof user>) => {
     try {
-     console.log(updatedData);
-     
-      // Call your API to update the user data
-      // Example: await api.updateUserProfile(updatedData);
+      setError(null);
+      // In a real app, you would call your API here
+      // await api.updateUserProfile(user.id, updatedData);
       
       // Update local state/store
-      // Example with Zustand:
-      // useUserStore.getState().updateUser(updatedData);
+      updateUser(updatedData);
       
+      setSuccessMessage('Profile updated successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
       return Promise.resolve();
     } catch (error) {
-      return Promise.reject(error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
+      setError(errorMessage);
+      return Promise.reject(errorMessage);
     }
   };
   
-  // Handle password changes
   const handlePasswordChange = async (oldPassword: string, newPassword: string) => {
     try {
-     console.log(oldPassword,newPassword);
-     
-      // Call your API to change the password
-      // Example: await api.changePassword(oldPassword, newPassword);
+      setError(null);
+      // In a real app, you would call your API here
+      // await api.changePassword(user.id, oldPassword, newPassword);
+      
+      setSuccessMessage('Password changed successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
       return Promise.resolve();
     } catch (error) {
-      return Promise.reject(error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to change password';
+      setError(errorMessage);
+      return Promise.reject(errorMessage);
     }
   };
-  
-  if (isLoading) {
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
       </div>
     );
   }
-  
-  if (error) {
+
+  if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Error!</strong>
-          <span className="block sm:inline"> {error}</span>
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative">
+          <strong className="font-bold">Warning:</strong>
+          <span className="block sm:inline"> User not found. Please log in again.</span>
         </div>
       </div>
     );
   }
 
-  // Mock user data for this example (replace with your actual user from store)
-
-  
   return (
-
-    <>
-    {/* <MainNav /> */}
-    {/* <ClientNavBar /> */}
-        <div className="container mx-auto py-8 px-4">
-      {/* <h1 className="text-3xl font-bold text-gray-800 mb-6">My Profile</h1> */}
+    <div className="container mx-auto py-8 px-4 max-w-4xl">
+      {error && (
+        <div className="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error:</strong>
+          <span className="block sm:inline ml-1">{error}</span>
+        </div>
+      )}
+      
+      {successMessage && (
+        <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Success:</strong>
+          <span className="block sm:inline ml-1">{successMessage}</span>
+        </div>
+      )}
+      
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Profile Settings</h1>
       
       <UserProfileSection 
         userData={user}
@@ -124,8 +93,6 @@ const ProfilePage: React.FC = () => {
         onPasswordChange={handlePasswordChange}
       />
     </div>
-    </>
-
   );
 };
 

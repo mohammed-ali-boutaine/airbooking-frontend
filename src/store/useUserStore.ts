@@ -3,6 +3,7 @@
 import { UserType } from "../types";
 import { create } from "zustand";
 import axiosInstance from "../utils/axios";
+// import { log } from "console";
 
 interface ApiResponse {
   user: UserType;
@@ -14,6 +15,7 @@ type Store = {
   error: string | null;
   setUser: (user: UserType, token: string) => void;
   fetchUserFromToken: () => Promise<void>;
+  updateUser : () => void ;
   logout: () => void;
 };
 
@@ -72,6 +74,10 @@ export const useUserStore = create<Store>((set) => ({
         error: error instanceof Error ? error.message : "Failed to fetch user"
       });
     }
+  },
+  updateUser : ()=>{
+console.log("updated");
+
   },
 
   logout: () => {

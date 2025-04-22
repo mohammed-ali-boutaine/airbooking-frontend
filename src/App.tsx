@@ -10,8 +10,17 @@ import HotelForm from "./components/hotel/HotelForm";
 import ProfilePage from "./pages/ProfilePage";
 import OwnerHomePage from "./pages/owner/OwnerHomePage";
 import HotelDetail from "./pages/owner/HotelDetail";
+import { useEffect } from "react";
+import { useUserStore } from "./store/useUserStore";
 
 const App: React.FC = () => {
+
+  const fetchUserFromToken = useUserStore(state => state.fetchUserFromToken)
+
+  useEffect(() => {
+    fetchUserFromToken()
+  }, []);
+
   return (
     <Router>
       <Routes>

@@ -1,8 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaHotel, FaPlus, FaChartLine, FaUsers, FaCalendarAlt, FaStar } from 'react-icons/fa';
+// import { useUserStore } from '../../store/useUserStore';
+// import { log } from 'console';
 
 const OwnerHomePage: React.FC = () => {
+
+
+  // const {user} = useUserStore()
+  // log
+  // console.log(user);
+  
   // Mock data - in a real app, this would come from an API
   const stats = {
     totalHotels: 3,
