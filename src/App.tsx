@@ -24,6 +24,9 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
+
+
+        {/* Auth pages  */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -43,7 +46,7 @@ const App: React.FC = () => {
           <Route path="hotels/:id" element={<HotelDetail />} />
           <Route path="hotels/:id/edit" element={<HotelForm />} />
           <Route path="rooms" element={<ProfilePage />} />
-          <Route path="booking" element={<ProfilePage />} />
+          <Route path="bookings" element={<ProfilePage />} />
           <Route path="statistics" element={<ProfilePage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>

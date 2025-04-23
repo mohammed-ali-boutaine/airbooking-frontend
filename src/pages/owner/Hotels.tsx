@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Hotel } from "../../types/hotel";
 import axiosInstance from "../../utils/axios";
 
@@ -7,15 +7,15 @@ const Hotels: React.FC = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deleteConfirmation, setDeleteConfirmation] = useState<number | null>(
-    null
-  );
-  const [notification, setNotification] = useState<{
-    message: string;
-    type: "success" | "error";
-  } | null>(null);
+  // const [deleteConfirmation, setDeleteConfirmation] = useState<number | null>(
+  //   null
+  // );
+  // const [notification, setNotification] = useState<{
+  //   message: string;
+  //   type: "success" | "error";
+  // } | null>(null);
   const location = useLocation();
-  const { term } = useParams();
+  // const { term } = useParams();
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -24,7 +24,7 @@ const Hotels: React.FC = () => {
         const url = "/owner/hotels";
 
         const response = await axiosInstance.get(url);
-        console.log(response.data);
+        // console.log(response.data);
 
         setHotels(response.data.data);
         setError(null);
@@ -37,34 +37,34 @@ const Hotels: React.FC = () => {
     };
 
     fetchHotels();
-  }, [location.pathname, term]);
+  }, [location.pathname]);
 
   const handleDelete = async (id: number) => {
     try {
       await axiosInstance.delete(`/hotels/${id}`);
       setHotels(hotels.filter((hotel) => hotel.id !== id));
-      setDeleteConfirmation(null);
-      setNotification({
-        message: "Hotel deleted successfully",
-        type: "success",
-      });
+      // setDeleteConfirmation(null);
+      // setNotification({
+      //   message: "Hotel deleted successfully",
+      //   type: "success",
+      // });
       console.log("Hotel deleted successfully:", id);
     } catch (err) {
       console.error("Error deleting hotel:", err);
-      setNotification({ message: "Failed to delete hotel", type: "error" });
+      // setNotification({ message: "Failed to delete hotel", type: "error" });
     }
   };
 
-  // Automatically hide notification after 3 seconds
-  useEffect(() => {
-    if (notification) {
-      const timer = setTimeout(() => {
-        setNotification(null);
-      }, 3000);
+  // // Automatically hide notification after 3 seconds
+  // useEffect(() => {
+  //   if (notification) {
+  //     const timer = setTimeout(() => {
+  //       setNotification(null);
+  //     }, 3000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [notification]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [notification]);
 
   if (loading)
     return (
@@ -83,73 +83,7 @@ const Hotels: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {notification && (
-        <div
-          className={`fixed top-4 right-4 p-3 rounded-md shadow-md z-50 max-w-xs transition-opacity duration-300 
-          ${
-            notification.type === "success"
-              ? "bg-green-100 text-green-800 border-l-4 border-green-500"
-              : "bg-red-100 text-red-800 border-l-4 border-red-500"
-          }`}
-        >
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              {notification.type === "success" ? (
-                <svg
-                  className="h-5 w-5 text-green-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-5 w-5 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              )}
-            </div>
-            <div className="ml-3">
-              <p className="text-sm">{notification.message}</p>
-            </div>
-            <div className="ml-auto pl-3">
-              <button
-                className="inline-flex text-gray-500 hover:text-gray-700 focus:outline-none"
-                onClick={() => setNotification(null)}
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+   
 
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
@@ -175,6 +109,8 @@ const Hotels: React.FC = () => {
             {/* Edit and Delete buttons */}
             {isOwner && (
               <div className="absolute top-2 right-2 flex gap-2 z-10">
+
+              {/* update button redirection  */}
                 <Link
                   to={`/owner/hotels/${hotel.id}/edit`}
                   className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition duration-300 hover:scale-110"
@@ -194,12 +130,11 @@ const Hotels: React.FC = () => {
                     />
                   </svg>
                 </Link>
+
+
+                {/* delete button  */}
                 <button
-                  onClick={() =>
-                    setDeleteConfirmation(
-                      deleteConfirmation === hotel.id ? null : hotel.id
-                    )
-                  }
+                  onClick={()=>{handleDelete(hotel.id)}}
                   className="bg-white p-2 rounded-full shadow hover:bg-gray-100 transition duration-300 hover:scale-110"
                 >
                   <svg
@@ -301,23 +236,7 @@ const Hotels: React.FC = () => {
                   )}
                 </div>
 
-                {/* Delete confirmation */}
-                {deleteConfirmation === hotel.id && (
-                  <div className="flex gap-2 mt-2 w-full">
-                    <button
-                      onClick={() => handleDelete(hotel.id)}
-                      className="flex-1 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition duration-300 text-sm flex items-center justify-center"
-                    >
-                      Confirm Delete
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirmation(null)}
-                      className="flex-1 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition duration-300 text-sm flex items-center justify-center"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
+            
               </div>
             </div>
           </div>
