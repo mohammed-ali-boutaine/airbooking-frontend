@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Hotel } from "../../types/hotel";
 import axiosInstance from "../../utils/axios";
+import LoadingSpinner from "../../components/static/LoadingSpinner";
 
 const Hotels: React.FC = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -66,12 +67,12 @@ const Hotels: React.FC = () => {
   //   }
   // }, [notification]);
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
+  if (loading) return <LoadingSpinner />
+    // return (
+    //   <div className="flex justify-center items-center min-h-screen">
+    //     <div className="text-xl">Loading...</div>
+    //   </div>
+    // );
   if (error)
     return (
       <div className="flex justify-center items-center min-h-screen">

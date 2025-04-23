@@ -143,7 +143,7 @@ const OwnerLayout = () => {
       </div>
 
       {/* Main Content */}
-      <div className={`pt-16 ${sidebarOpen ? "ml-64" : ""} transition-all duration-300`}>
+      <div className={`relative min-h-full pt-16 ${sidebarOpen ? "ml-64" : ""} transition-all duration-300`}>
         <Outlet />
       </div>
     </div>
