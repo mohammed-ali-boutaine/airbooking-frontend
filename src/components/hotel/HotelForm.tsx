@@ -8,6 +8,7 @@ import TextArea from "../static/TextArea";
 import FileUpload from "../static/FileUpload";
 import TagSelector from "../tags/TagSelector";
 import { FormErrors, HotelType, Tag } from "../../types";
+import LoadingSpinner from "../static/LoadingSpinner";
 // import { log } from "console";
 
 const HotelForm: React.FC = () => {
@@ -42,7 +43,7 @@ const HotelForm: React.FC = () => {
     if (isEditMode) {
       fetchHotel();
     }
-  }, [id]);
+  }, []);
 
   const fetchHotel = async () => {
     try {
@@ -211,15 +212,7 @@ const HotelForm: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="spinner-border text-primary" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow-md">
@@ -293,8 +286,8 @@ const HotelForm: React.FC = () => {
         />
 
         <TagSelector
-          selectedTags={formData.tags.map((id) => ({ id, name: "" }))} // Convert IDs to Tag objects for the component
-          onChange={handleTagsChange}
+          selectedTags={formData.tags.map((id) => ({ id, name: "" }))} 
+          onChange={()=> handleTagsChange}
           error={errors.tags}
         />
 

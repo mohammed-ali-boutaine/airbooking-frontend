@@ -18,7 +18,7 @@ const OwnerLayout = () => {
       { name: "Profile", href: "/owner/profile" },
       { name: "Contact", href: "/owner/contact" },
       { name: "Help", href: "/owner/help" },
-      { name: "Logout", href: "/logout" },
+      // { name: "Logout", href: "/logout" },
     ];
   // ];
 

@@ -5,7 +5,7 @@ import OwnerLayout from "./layouts/OwnerLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import Homepage from "./pages/HomePage";
-import HotelsPage from "./pages/owner/Hotels";
+import Hotels from "./pages/owner/Hotels";
 import HotelForm from "./components/hotel/HotelForm";
 import ProfilePage from "./pages/ProfilePage";
 import OwnerHomePage from "./pages/owner/OwnerHomePage";
@@ -35,13 +35,13 @@ const App: React.FC = () => {
         <Route path="/" element={<Homepage />} />
         <Route path="/rooms" element={<Homepage />} />
 
-        <Route path="/hotels" element={<HotelsPage />} />
-        <Route path="/hotels/search/:term" element={<HotelsPage />} />
+        {/* <Route path="/hotels" element={<Hotels />} /> */}
+        {/* <Route path="/hotels/search/:term" element={<Hotels />} /> */}
 
         {/* Owner Routes */}
         <Route path="/owner" element={<OwnerLayout />}>
           <Route index element={<OwnerHomePage />} />
-          <Route path="hotels" element={<HotelsPage />} />
+          <Route path="hotels" element={<Hotels />} />
           <Route path="hotels/new" element={<HotelForm />} />
           <Route path="hotels/:id" element={<HotelDetail />} />
           <Route path="hotels/:id/edit" element={<HotelForm />} />

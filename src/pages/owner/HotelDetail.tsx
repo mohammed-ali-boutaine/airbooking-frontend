@@ -17,6 +17,7 @@ import {
   FaCalendarAlt,
   FaUsers,
 } from "react-icons/fa";
+import LoadingSpinner from "../../components/static/LoadingSpinner";
 
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -156,15 +157,7 @@ const HotelDetail: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="spinner-border text-primary" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />
 
   if (error) {
     return (

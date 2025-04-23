@@ -1,53 +1,40 @@
-export interface User {
-  id: number;
-  name: string;
-}
-
-export interface Room {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  images?: Image[];
-}
-
-
-export interface Tag{
-  id:number;
-  name : string;
-  icon_path?:string
-}
-export interface Image {
-  id: number;
-  path: string;
-}
-
-export interface Review {
-  id: number;
-  comment: string;
-  rating: number;
-  created_at: string;
-  user: User;
-}
+import { Review } from "./review";
+import { Room } from "./room";
+import { Tag } from "./tag";
+import { UserType } from "./user";
 
 export interface Hotel {
-  id: number;
+  id?: number;
   name: string;
   address: string;
   city: string;
   country: string;
-  tags:Tag[];
+  tags: Tag[];
   description: string;
   coordinate: {
     lat: number;
     lng: number;
   };
-  profile_path?: string;
-  cover_path?: string;
+  profile_path?: string | null | File;
+  cover_path?: string | null | File;
   owner_id: number;
-  owner?: User;
+  owner?: UserType;
   rooms?: Room[];
   reviews?: Review[];
   created_at: string;
   updated_at: string;
-} 
+}
+
+export interface HotelFormErrors {
+  name?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  tags?: string;
+  description?: string;
+  profile_path?: string;
+  cover_path?: string;
+  coordinate?: string;
+}
+
+export type HotelType = Hotel;
