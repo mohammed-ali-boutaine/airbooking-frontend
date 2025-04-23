@@ -1,11 +1,15 @@
 import ClientNavBar from "../components/navbars/ClientNavBar";
-// import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
-const ClientLayout = ({ children }: { children: React.ReactNode }) => {
+const ClientLayout = () => {
   return (
     <div>
       <ClientNavBar />
-      <main>{children} </main>
+      <main>
+
+      <Outlet />
+
+      </main>
       {/* add foter  */}
     </div>
   );

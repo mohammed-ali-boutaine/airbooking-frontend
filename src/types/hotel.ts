@@ -11,18 +11,20 @@ export interface Hotel {
   country: string;
   tags: Tag[];
   description: string;
+  email: string;
+  phone: string;
+  website: string;
   coordinate: {
     lat: number;
     lng: number;
   };
   profile_path?: string | null | File;
   cover_path?: string | null | File;
-  owner_id: number;
   owner?: UserType;
   rooms?: Room[];
   reviews?: Review[];
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface HotelFormErrors {
@@ -32,6 +34,9 @@ export interface HotelFormErrors {
   country?: string;
   tags?: string;
   description?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
   profile_path?: string;
   cover_path?: string;
   coordinate?: string;

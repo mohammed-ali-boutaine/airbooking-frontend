@@ -39,6 +39,9 @@ const HotelDetail: React.FC = () => {
       lat: 0,
       lng: 0,
     },
+    email: "",
+    phone: "",
+    website: "",
   });
 
   useEffect(() => {
@@ -50,6 +53,10 @@ const HotelDetail: React.FC = () => {
       setIsLoading(true);
       const response = await axiosInstance.get(`/hotels/${id}`);
       const hotelData = response.data.data;
+
+      console.log("hotel data:", hotelData);
+      console.log(hotelData.tags);
+      
 
       // Parse the coordinate string if it comes as a string
       if (hotelData.coordinate && typeof hotelData.coordinate === "string") {
@@ -70,7 +77,7 @@ const HotelDetail: React.FC = () => {
           typeof hotelData.tags[0] === "object"
         ) {
           // Map complex tag objects to their name property or string representation
-          hotelData.tags = hotelData.tags.map((tag:Tag) =>
+          hotelData.tags = hotelData.tags.map((tag: Tag) =>
             tag.name ? tag.name : tag.id ? String(tag.id) : "Unknown"
           );
         }
@@ -125,6 +132,11 @@ const HotelDetail: React.FC = () => {
       hotelData.append("city", formData.city);
       hotelData.append("country", formData.country);
       hotelData.append("description", formData.description);
+      hotelData.append("email", formData.email);
+      hotelData.append("phone", formData.phone);
+      if (formData.website) {
+        hotelData.append("website", formData.website);
+      }
 
       // Append tags
       formData.tags.forEach((tagId, index) => {
@@ -157,7 +169,7 @@ const HotelDetail: React.FC = () => {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />;
 
   if (error) {
     return (
@@ -246,6 +258,33 @@ const HotelDetail: React.FC = () => {
               value={formData.description}
               onChange={handleInputChange}
               required
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Phone Number *"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                required
+              />
+
+              <Input
+                label="Email Address *"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+
+            <Input
+              label="Website"
+              name="website"
+              value={formData.website}
+              onChange={handleInputChange}
+              // helperText="Optional: Enter your hotel's website URL"
             />
 
             <TagSelector
@@ -399,16 +438,33 @@ const HotelDetail: React.FC = () => {
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <FaPhone className="text-gray-400 mr-2" />
-                      <span className="text-gray-700">+1 234 567 890</span>
+                      <span className="text-gray-700">
+                        {hotel.phone || "Not provided"}
+                      </span>
                     </div>
                     <div className="flex items-center">
                       <FaEnvelope className="text-gray-400 mr-2" />
-                      <span className="text-gray-700">contact@hotel.com</span>
+                      <span className="text-gray-700">
+                        {hotel.email || "Not provided"}
+                      </span>
                     </div>
-                    <div className="flex items-center">
-                      <FaGlobe className="text-gray-400 mr-2" />
-                      <span className="text-gray-700">www.hotel.com</span>
-                    </div>
+                    {hotel.website && (
+                      <div className="flex items-center">
+                        <FaGlobe className="text-gray-400 mr-2" />
+                        <a
+                          href={
+                            hotel.website.startsWith("http")
+                              ? hotel.website
+                              : `https://${hotel.website}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {hotel.website}
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
 

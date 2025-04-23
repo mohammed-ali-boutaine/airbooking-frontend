@@ -12,6 +12,7 @@ import OwnerHomePage from "./pages/owner/OwnerHomePage";
 import HotelDetail from "./pages/owner/HotelDetail";
 import { useEffect } from "react";
 import { useUserStore } from "./store/useUserStore";
+import ClientLayout from "./layouts/ClientLayout";
 
 const App: React.FC = () => {
 
@@ -32,11 +33,10 @@ const App: React.FC = () => {
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        <Route path="/" element={<Homepage />} />
-        <Route path="/rooms" element={<Homepage />} />
+        <Route path="/" element={<ClientLayout/>}>
+            <Route index element={<Homepage />} />
+        </Route>
 
-        {/* <Route path="/hotels" element={<Hotels />} /> */}
-        {/* <Route path="/hotels/search/:term" element={<Hotels />} /> */}
 
         {/* Owner Routes */}
         <Route path="/owner" element={<OwnerLayout />}>
@@ -54,6 +54,11 @@ const App: React.FC = () => {
 
 
 
+
+        {/* <Route path="/rooms" element={<Homepage />} /> */}
+
+        {/* <Route path="/hotels" element={<Hotels />} /> */}
+        {/* <Route path="/hotels/search/:term" element={<Hotels />} /> */}
 
 
 

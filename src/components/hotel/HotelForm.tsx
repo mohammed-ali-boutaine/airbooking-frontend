@@ -9,7 +9,6 @@ import FileUpload from "../static/FileUpload";
 import TagSelector from "../tags/TagSelector";
 import { FormErrors, HotelType, Tag } from "../../types";
 import LoadingSpinner from "../static/LoadingSpinner";
-// import { log } from "console";
 
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
@@ -30,6 +29,9 @@ const HotelForm: React.FC = () => {
       lat: 0,
       lng: 0,
     },
+    phone: "",
+    email: "",
+    website: "",
   });
 
   // UI states
@@ -50,6 +52,8 @@ const HotelForm: React.FC = () => {
       setIsLoading(true);
       const response = await axiosInstance.get(`/hotels/${id}`);
       const hotelData = response.data.data;
+
+      // console.log(response);
 
       // Parse the coordinate string if it comes as a string
       if (hotelData.coordinate && typeof hotelData.coordinate === "string") {
@@ -83,10 +87,10 @@ const HotelForm: React.FC = () => {
   };
 
   // Handle tags changes
-  const handleTagsChange = (selectedTagIds: Tag[]) => {
+  const handleTagsChange = (selectedTags: Tag[]) => {
     setFormData({
       ...formData,
-      tags: selectedTagIds, // Store just the IDs in the formData
+      tags: selectedTags, // Update to store the full Tag objects, not just IDs
     });
   };
 
@@ -111,21 +115,43 @@ const HotelForm: React.FC = () => {
     try {
       const hotelData = new FormData();
 
+      // Log the current form data for debugging
+      // console.log("Submitting form data:", formData);
+
       // Append all fields except files
       hotelData.append("name", formData.name);
       hotelData.append("address", formData.address);
       hotelData.append("city", formData.city);
       hotelData.append("country", formData.country);
       hotelData.append("description", formData.description);
+      hotelData.append("phone", formData.phone);
+      hotelData.append("email", formData.email);
+      if (formData.website) {
+        hotelData.append("website", formData.website);
+      }
 
-      // Append tags
-      formData.tags.forEach((tagId, index) => {
-        hotelData.append(`tags[${index}]`, tagId.toString());
-      });
+      // Append tags - extract the id from each Tag object
+      if (Array.isArray(formData.tags) && formData.tags.length > 0) {
+        formData.tags.forEach((tag, index) => {
+          if (typeof tag === "object" && tag !== null && "id" in tag) {
+            hotelData.append(`tags[${index}]`, tag.id.toString());
+          } else if (typeof tag === "number" || typeof tag === "string") {
+            hotelData.append(`tags[${index}]`, tag.toString());
+          }
+        });
+      }
 
       // Append coordinate as array/object
-      hotelData.append("coordinate[lat]", String(formData.coordinate.lat));
-      hotelData.append("coordinate[lng]", String(formData.coordinate.lng));
+      if (formData.coordinate) {
+        hotelData.append(
+          "coordinate[lat]",
+          String(formData.coordinate.lat || 0)
+        );
+        hotelData.append(
+          "coordinate[lng]",
+          String(formData.coordinate.lng || 0)
+        );
+      }
 
       // Append files only if they are File objects
       if (formData.profile_path instanceof File) {
@@ -135,21 +161,35 @@ const HotelForm: React.FC = () => {
         hotelData.append("cover_path", formData.cover_path);
       }
 
-      let response;
+      // Add method field for Laravel to properly recognize PUT request
       if (isEditMode) {
-        response = await axiosInstance.put(`/hotels/${id}`, hotelData, {
+        hotelData.append("_method", "PUT");
+      }
+
+      // Debug FormData contents
+      // console.log("FormData entries:");
+      // for (let pair of hotelData.entries()) {
+      //   console.log(pair[0], pair[1]);
+      // }
+
+      // let response;
+
+      if (isEditMode) {
+          await axiosInstance.post(`/hotels/${id}`, hotelData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
+        // console.log("Update response:", response);
+
         setSuccessMessage("Hotel successfully updated!");
       } else {
-        response = await axiosInstance.post("/hotels", hotelData, {
+         await axiosInstance.post("/hotels", hotelData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log(response);
+        // console.log("Create response:", response);
 
         setSuccessMessage("Hotel successfully added!");
       }
@@ -174,6 +214,9 @@ const HotelForm: React.FC = () => {
             lat: 0,
             lng: 0,
           },
+          phone: "",
+          email: "",
+          website: "",
         });
 
         // Clear file inputs
@@ -212,7 +255,7 @@ const HotelForm: React.FC = () => {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow-md">
@@ -276,7 +319,7 @@ const HotelForm: React.FC = () => {
         </div>
 
         <TextArea
-          label="Description *"
+          label="Description "
           id="description"
           name="description"
           value={formData.description}
@@ -285,9 +328,41 @@ const HotelForm: React.FC = () => {
           required
         />
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <Input
+            label="Phone Number *"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
+            error={errors.phone}
+            required
+          />
+
+          <Input
+            label="Email Address *"
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            error={errors.email}
+            required
+          />
+        </div>
+
+        <Input
+          label="Website"
+          id="website"
+          name="website"
+          value={formData.website}
+          onChange={handleInputChange}
+          error={errors.website}
+        />
+
         <TagSelector
-          selectedTags={formData.tags.map((id) => ({ id, name: "" }))} 
-          onChange={()=> handleTagsChange}
+          selectedTags={formData.tags}
+          onChange={handleTagsChange}
           error={errors.tags}
         />
 

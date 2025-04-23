@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../utils/axios";
+import { Tag } from "../../types";
 
-interface Tag {
-  id: number;
-  name: string;
-}
+// interface Tag {
+//   id: number;
+//   name: string;
+// }
 
 interface TagSelectorProps {
   selectedTags: Tag[];
-  onChange: (selectedTagIds: number[]) => void; // Changed to expect number[] for consistency
+  onChange: (selectedTags: Tag[]) => void; // Change to expect Tag[]
   error?: string;
 }
 
@@ -43,14 +44,13 @@ const TagSelector: React.FC<TagSelectorProps> = ({
   }, []);
 
   const handleTagToggle = (tagId: number) => {
-    const selectedTagIds = selectedTags.map((tag) => tag.id);
-    const isSelected = selectedTagIds.includes(tagId);
-
-    const updatedSelectedIds = isSelected
-      ? selectedTagIds.filter((id) => id !== tagId)
-      : [...selectedTagIds, tagId];
-
-    onChange(updatedSelectedIds); // Pass array of ids as expected by onChange
+    const isSelected = selectedTags.some(tag => tag.id === tagId);
+    
+    const updatedSelectedTags = isSelected
+      ? selectedTags.filter(tag => tag.id !== tagId)
+      : [...selectedTags, tags.find(tag => tag.id === tagId)!]; 
+  
+    onChange(updatedSelectedTags); 
   };
 
   if (isLoading) {
