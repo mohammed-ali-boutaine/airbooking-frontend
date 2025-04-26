@@ -5,6 +5,8 @@ export interface UserType {
   name: string;
   email: string;
   role: UserRole;
+  phone?:string;
+  profile_path?:null|string | File ;
   created_at: string;
   updated_at: string;
 }

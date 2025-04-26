@@ -7,12 +7,17 @@ import Button from "../../components/static/Button";
 import DetailLink from "../../components/static/DetailLink";
 import DeleteButton from "../../components/static/DeleteButton";
 import EditButton from "../../components/static/EditButton";
-
+// import { useUserStore } from "../../store/useUserStore";
+// 
 const Hotels: React.FC = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // const {user} = useUserStore()
+
+  // console.log(user);
+  
   const location = useLocation();
 
   useEffect(() => {
@@ -55,7 +60,6 @@ const Hotels: React.FC = () => {
       </div>
     );
 
-  const isOwner = true;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -135,14 +139,7 @@ const Hotels: React.FC = () => {
         {hotels.length === 0 && (
           <div className="col-span-full text-center py-10">
             <p className="text-gray-500 text-lg">No hotels found</p>
-            {isOwner && (
-              <Link
-                to="/owner/hotels/new"
-                className="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
-              >
-                Add Your First Hotel
-              </Link>
-            )}
+           
           </div>
         )}
       </div>

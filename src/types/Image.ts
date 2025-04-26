@@ -1,4 +1,4 @@
 export interface Image {
      id: number;
-     path: string;
-   }
+     image_path: string;
+  }

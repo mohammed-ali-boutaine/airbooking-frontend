@@ -1,28 +1,46 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserProfileSection from '../components/UserProfileSection';
 import { useUserStore } from "../store/useUserStore";
+import { UserType } from "../types";
 
-const ProfilePage: React.FC = () => {
-  const { user, loading, updateUser } = useUserStore();
+
+// interface ProfileProps{
+//   user?:UserType
+// }
+const ProfilePage: React.FC= () => {
+  const { user, error: storeError, updateUser } = useUserStore();
+  // user = user ?? useUserStore(state => state.user)
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  // useEffect(() => {
+  //   // Fetch user data on component mount
+  //   useUserStore.getState().fetchUserFromToken();
+  // }, []);
 
+  // Update error state when store error changes
   useEffect(() => {
-    console.log(user);
-    useUserStore.getState().fetchUserFromToken();
-    
-  }, []);
+    if (storeError) {
+      setError(storeError);
+    }
+  }, [storeError]);
 
-
-  const handleSaveProfile = async (updatedData: Partial<typeof user>) => {
+  const handleSaveProfile = async (updatedData: Partial<UserType>) => {
     try {
       setError(null);
-      // In a real app, you would call your API here
-      // await api.updateUserProfile(user.id, updatedData);
       
-      // Update local state/store
-      updateUser(updatedData);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      // Merge current user data with updates
+      const updatedUser = {
+        ...user,
+        ...updatedData
+      } as UserType;
+      
+      // Call the store's updateUser function
+      await updateUser(updatedUser);
       
       setSuccessMessage('Profile updated successfully!');
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -37,8 +55,20 @@ const ProfilePage: React.FC = () => {
   const handlePasswordChange = async (oldPassword: string, newPassword: string) => {
     try {
       setError(null);
-      // In a real app, you would call your API here
-      // await api.changePassword(user.id, oldPassword, newPassword);
+      // This would typically use a different API endpoint
+      // You might want to add a specific function for password changes in your store
+      // For now, let's assume we need to update the user with password data
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      // Example implementation - adjust based on your API requirements
+      await updateUser({
+        ...user,
+        old_password: oldPassword,
+        new_password: newPassword
+      } as UserType);
       
       setSuccessMessage('Password changed successfully!');
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -50,13 +80,13 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+  //     </div>
+  //   );
+  // }
 
   if (!user) {
     return (

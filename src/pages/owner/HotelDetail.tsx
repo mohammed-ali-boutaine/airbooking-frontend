@@ -16,6 +16,11 @@ import {
   FaStar,
   FaCalendarAlt,
   FaUsers,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaBed,
+  FaDollarSign,
 } from "react-icons/fa";
 import LoadingSpinner from "../../components/static/LoadingSpinner";
 
@@ -27,6 +32,7 @@ const HotelDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<HotelType>({
+    id:0,
     name: "",
     address: "",
     city: "",
@@ -46,6 +52,8 @@ const HotelDetail: React.FC = () => {
 
   useEffect(() => {
     fetchHotel();
+    console.log(hotel);
+    
   }, [id]);
 
   const fetchHotel = async () => {
@@ -56,7 +64,6 @@ const HotelDetail: React.FC = () => {
 
       console.log("hotel data:", hotelData);
       console.log(hotelData.tags);
-      
 
       // Parse the coordinate string if it comes as a string
       if (hotelData.coordinate && typeof hotelData.coordinate === "string") {
@@ -166,6 +173,18 @@ const HotelDetail: React.FC = () => {
     } catch (err) {
       console.error("Error updating hotel:", err);
       setError("Failed to update hotel");
+    }
+  };
+
+  const handleDeleteRoom = async (roomId: number) => {
+    if (window.confirm("Are you sure you want to delete this room?")) {
+      try {
+        await axiosInstance.delete(`/rooms/${roomId}`);
+        fetchHotel(); // Refresh hotel data to update rooms list
+      } catch (err) {
+        console.error("Error deleting room:", err);
+        setError("Failed to delete room");
+      }
     }
   };
 
@@ -350,15 +369,15 @@ const HotelDetail: React.FC = () => {
             {hotel.cover_path && (
               <div className="relative h-96 rounded-lg overflow-hidden">
                 <img
-                  src={`http://127.0.0.1:8000/storage/${hotel.cover_path}`}
+                  src={`${hotel.cover_path}`}
                   alt={hotel.name}
                   className="w-full h-full object-cover"
                 />
                 {hotel.profile_path && (
                   <div className="absolute bottom-4 left-4">
                     <img
-                      src={`http://127.0.0.1:8000/storage/${hotel.profile_path}`}
-                      alt={`${hotel.name} logo`}
+                  src={`${hotel.profile_path}`}
+                  alt={`${hotel.name} logo`}
                       className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
                     />
                   </div>
@@ -494,6 +513,94 @@ const HotelDetail: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Rooms Section */}
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Rooms</h2>
+            <button
+              onClick={() => navigate(`/owner/hotels/${id}/rooms/new`)}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center"
+            >
+              <FaPlus className="mr-2" />
+              Add New Room
+            </button>
+          </div>
+
+          {hotel.rooms && hotel.rooms.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hotel.rooms.map((room) => (
+                <div
+                  key={room.id}
+                  className="bg-white rounded-lg shadow-md overflow-hidden"
+                >
+                  {room.images && room.images.length > 0 && (
+                    <div className="relative h-48">
+                      <img
+                        src={`http://127.0.0.1:8000/storage/${room.images[0].image_path}`}
+                        alt={room.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h2 className="text-xl font-semibold mb-2">{room.name}</h2>
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {room.description}
+                    </p>
+                    <div className="grid grid-cols-3 gap-4 mb-4">
+                      <div className="flex items-center">
+                        <FaBed className="text-gray-400 mr-2" />
+                        <span>{room.bed_numbers} beds</span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaUsers className="text-gray-400 mr-2" />
+                        <span>{room.capacity} guests</span>
+                      </div>
+                      <div className="flex items-center">
+                        <FaDollarSign className="text-gray-400 mr-2" />
+                        <span>${room.price_per_night}/night</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span
+                        className={`px-2 py-1 rounded text-sm ${
+                          room.is_available
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {room.is_available ? "Available" : "Not Available"}
+                      </span>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() =>
+                            navigate(`/owner/rooms/${room.id}/edit`)
+                          }
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRoom(room.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-white rounded-lg shadow-md">
+              <p className="text-gray-500">
+                No rooms found. Add your first room!
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

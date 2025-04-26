@@ -5,7 +5,10 @@ interface ApiError {
   statusCode: number;
 }
 
-let cachedToken: string | null = localStorage.getItem("token");
+// Don't use a cached variable - always get the latest token from localStorage
+const getToken = (): string | null => {
+  return localStorage.getItem("token");
+};
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -16,8 +19,12 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (cachedToken) {
-      config.headers.Authorization = `Bearer ${cachedToken}`;
+    // Always get the fresh token from localStorage
+    const token = getToken();
+
+    if (token) {
+      // Set Authorization header with the current token
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -27,11 +34,20 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
+      // Clear token from localStorage
       localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      cachedToken = null;
-      window.location.href = "/login"; // Consider making this configurable
+
+      // Only redirect to login if we're not already on the login page
+      const currentPath = window.location.pathname;
+      if (
+        !currentPath.includes("/login") &&
+        !currentPath.includes("/register")
+      ) {
+        // Use history to navigate instead of direct window.location change
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

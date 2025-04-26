@@ -9,6 +9,7 @@ import FileUpload from "../static/FileUpload";
 import TagSelector from "../tags/TagSelector";
 import { FormErrors, HotelType, Tag } from "../../types";
 import LoadingSpinner from "../static/LoadingSpinner";
+import Button from "../static/Button";
 
 const HotelForm: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const HotelForm: React.FC = () => {
 
   // Form state
   const [formData, setFormData] = useState<HotelType>({
+    id:0,
     name: "",
     address: "",
     city: "",
@@ -133,11 +135,11 @@ const HotelForm: React.FC = () => {
       // Append tags - extract the id from each Tag object
       if (Array.isArray(formData.tags) && formData.tags.length > 0) {
         formData.tags.forEach((tag, index) => {
-          if (typeof tag === "object" && tag !== null && "id" in tag) {
+          // if (typeof tag === "object" && tag !== null && "id" in tag) {
             hotelData.append(`tags[${index}]`, tag.id.toString());
-          } else if (typeof tag === "number" || typeof tag === "string") {
-            hotelData.append(`tags[${index}]`, tag.toString());
-          }
+          // } else if (typeof tag === "number" || typeof tag === "string") {
+          //   hotelData.append(`tags[${index}]`, tag.name.toString());
+          // }
         });
       }
 
@@ -180,6 +182,7 @@ const HotelForm: React.FC = () => {
             "Content-Type": "multipart/form-data",
           },
         });
+
         // console.log("Update response:", response);
 
         setSuccessMessage("Hotel successfully updated!");
@@ -202,6 +205,7 @@ const HotelForm: React.FC = () => {
       if (!isEditMode) {
         // Reset form only for new hotel creation
         setFormData({
+          id:0,
           name: "",
           address: "",
           city: "",
@@ -417,7 +421,16 @@ const HotelForm: React.FC = () => {
           >
             Cancel
           </button>
-          <button
+
+          <Button  type="submit"
+            disabled={isSubmitting}>
+  {isSubmitting
+              ? "Saving..."
+              : isEditMode
+              ? "Update Hotel"
+              : "Add Hotel"}
+          </Button>
+          {/* <button
             type="submit"
             disabled={isSubmitting}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
@@ -427,7 +440,7 @@ const HotelForm: React.FC = () => {
               : isEditMode
               ? "Update Hotel"
               : "Add Hotel"}
-          </button>
+          </button> */}
         </div>
       </form>
     </div>

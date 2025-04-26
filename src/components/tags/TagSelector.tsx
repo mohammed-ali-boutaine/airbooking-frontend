@@ -58,7 +58,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
       <div className="my-4 p-3 bg-gray-50 border border-gray-200 rounded-md">
         <div className="flex items-center space-x-3">
           <svg
-            className="animate-spin h-5 w-5 text-indigo-600"
+            className="animate-spin h-5 w-5 text-[var(--primary-color)]"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -102,7 +102,7 @@ const TagSelector: React.FC<TagSelectorProps> = ({
             className={`px-3 py-1 rounded-full text-sm font-medium
         ${
           selectedTags.some((selected) => selected.id === tag.id)
-            ? "bg-indigo-600 text-white"
+            ? "bg-[var(--primary-color)] text-white"
             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
         }`}
           >

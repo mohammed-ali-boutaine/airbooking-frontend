@@ -4,16 +4,24 @@ import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { useUserStore } from "../../store/useUserStore";
 
-import ProfileHeader from "./ProfileHeader";
+// import ProfileHeader from "./ProfileHeader";
 import Logo from "../static/Logo";
+import ProfileSection from "./ProfileSection";
+// import ProfileSection from "./ProfileSection";
 
 const ClientNavBar: React.FC = () => {
-  const user = useUserStore((state) => state.user);
-  const loading = useUserStore((state) => state.loading);
-  // const loading = false
+  const { user, loading } = useUserStore();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // const sidebarLinks = [
+  //   { name: "Home", href: "/", icon: "🏠" },
+  //   { name: "Search Hotels", href: "/hotels", icon: "🔍" },
+  //   { name: "My Bookings", href: "/bookings", icon: "📅" },
+  //   { name: "Favorites", href: "/favorites", icon: "❤️" },
+  //   { name: "Offers", href: "/offers", icon: "🏷️" },
+  // ];
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -30,13 +38,17 @@ const ClientNavBar: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  // const toggleSidebar = () => {
+  //   setSidebarOpen(!sidebarOpen);
+  // };
+
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 flex items-center">
-            <Logo to="/"/>
+            <Logo to="/" />
           </div>
 
           <div className="hidden md:block flex-grow mx-8">
@@ -53,7 +65,7 @@ const ClientNavBar: React.FC = () => {
               // <Skeleton className="h-10 w-24" />
               <div className="w-20 h-10 bg-gray-200 animate-pulse rounded" />
             ) : user ? (
-              <ProfileHeader user={user} />
+              <ProfileSection user={user} />
             ) : (
               <>
                 <Link to="/login">

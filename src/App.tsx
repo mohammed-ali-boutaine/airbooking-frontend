@@ -8,64 +8,68 @@ import Homepage from "./pages/HomePage";
 import Hotels from "./pages/owner/Hotels";
 import HotelForm from "./components/hotel/HotelForm";
 import ProfilePage from "./pages/ProfilePage";
-import OwnerHomePage from "./pages/owner/OwnerHomePage";
+// import OwnerHomePage from "./pages/owner/OwnerHomePage";
 import HotelDetail from "./pages/owner/HotelDetail";
 import { useEffect } from "react";
 import { useUserStore } from "./store/useUserStore";
 import ClientLayout from "./layouts/ClientLayout";
+import RoomList from "./components/room/RoomList";
+import RoomForm from "./components/room/RoomForm";
+import OwnerRooms from "./pages/owner/OwnerRooms";
 
 const App: React.FC = () => {
-
-  const fetchUserFromToken = useUserStore(state => state.fetchUserFromToken)
-
+  // const fetchUserFromToken = useUserStore(state => state.fetchUserFromToken)
+  const { user, fetchUserFromToken } = useUserStore();
   useEffect(() => {
-    fetchUserFromToken()
+    if (!user) {
+      fetchUserFromToken();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // if()
 
   return (
     <Router>
       <Routes>
-
-
         {/* Auth pages  */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        <Route path="/" element={<ClientLayout/>}>
-            <Route index element={<Homepage />} />
+        <Route path="/" element={<ClientLayout />}>
+          <Route index element={<Homepage />} />
+          {/* { */}
+          {user && (
+            <Route path="profile" element={<ProfilePage />} />
+          )}{" "}
+          {/* } */}
         </Route>
-
 
         {/* Owner Routes */}
         <Route path="/owner" element={<OwnerLayout />}>
-          <Route index element={<OwnerHomePage />} />
+          <Route index element={<>Hello</>} />
           <Route path="hotels" element={<Hotels />} />
           <Route path="hotels/new" element={<HotelForm />} />
           <Route path="hotels/:id" element={<HotelDetail />} />
           <Route path="hotels/:id/edit" element={<HotelForm />} />
-          <Route path="rooms" element={<ProfilePage />} />
-          <Route path="bookings" element={<ProfilePage />} />
+
+          {/* Room Routes */}
+          <Route path="rooms" element={<OwnerRooms />} />
+          <Route path="hotels/:hotelId/rooms" element={<RoomList />} />
+          <Route path="hotels/:hotelId/rooms/new" element={<RoomForm />} />
+          <Route path="rooms/:roomId/edit" element={<RoomForm isEdit />} />
+
+          <Route path="booking" element={<ProfilePage />} />
           <Route path="statistics" element={<ProfilePage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
-
-
-
-
 
         {/* <Route path="/rooms" element={<Homepage />} /> */}
 
         {/* <Route path="/hotels" element={<Hotels />} /> */}
         {/* <Route path="/hotels/search/:term" element={<Hotels />} /> */}
-
-
-
-
-
-
-        
       </Routes>
     </Router>
   );

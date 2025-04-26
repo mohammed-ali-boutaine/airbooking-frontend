@@ -42,8 +42,9 @@ const LoginPage = () => {
       const data = response.data;
 
       // Save token
-      localStorage.setItem("token", data.token);
-
+      // localStorage.setItem("token", data.token);
+      console.log(data);
+      
       setUser(data.user, data.token);
 
       // Notify success

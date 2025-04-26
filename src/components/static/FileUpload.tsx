@@ -99,7 +99,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
               {fileName || `Choose ${multiple ? "files" : "a file"}`}
             </span>
           </div>
-          <span className="ml-3 text-sm font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">
+          <span className="ml-3 text-sm font-medium text-[var(--primary-color)] bg-red-200 px-2 py-1 rounded-md">
             Browse
           </span>
         </button>
