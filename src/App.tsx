@@ -20,6 +20,7 @@ import RoomForm from "./components/room/RoomForm";
 import Rooms from "./pages/owner/Rooms";
 import RoomDetail from "./pages/owner/RoomDetail";
 import OwnerHomePage from "./pages/owner/OwnerHomePage";
+import HotelRooms from "./pages/owner/HotelRooms";
 // import OwnerDashboard from "./components/owner/OwnerDashboard";
 
 const App: React.FC = () => {
@@ -51,20 +52,19 @@ const App: React.FC = () => {
 
         {/* Owner Routes */}
         <Route path="/owner" element={<OwnerLayout />}>
-          <Route index element={<OwnerHomePage/>} />
+          <Route index element={<OwnerHomePage />} />
           <Route path="hotels" element={<Hotels />} />
           <Route path="hotels/new" element={<HotelForm />} />
           <Route path="hotels/:id" element={<HotelDetail />} />
           <Route path="hotels/:id/edit" element={<HotelForm />} />
 
-          <Route path="hotels/:hotelId/rooms" element={<Rooms />} />
+          <Route path="hotels/:hotelId/rooms" element={<HotelRooms />} />
           <Route path="hotels/:hotelId/rooms/new" element={<RoomForm />} />
           <Route path="rooms/:id" element={<RoomDetail />} />
           <Route path="rooms/:id/edit" element={<RoomForm />} />
 
-          <Route path="rooms" element={<ProfilePage />} />
+          <Route path="rooms" element={<Rooms />} />
           <Route path="booking" element={<ProfilePage />} />
-          {/* <Route path="statistics" element={<ProfilePage />} /> */}
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
