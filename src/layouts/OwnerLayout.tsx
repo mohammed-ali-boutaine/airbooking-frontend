@@ -3,25 +3,28 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../components/static/Logo";
 import { useUserStore } from "../store/useUserStore";
-import { Loader2 } from "lucide-react";
+import { 
+  Loader2, 
+  LayoutDashboard, 
+  Building2, 
+  PlusSquare, 
+  Bed, 
+  Calendar, 
+  Menu 
+} from "lucide-react";
 import ProfileSection from "../components/navbars/ProfileSection";
-// import ProfileHeader from "../components/navbars/ProfileHeader";
-// import UserProfileSection from "../components/UserProfileSection";
-// import ProfileSection from "../components/navbars/ProfileSection";
-
 
 const OwnerLayout = () => {
   const { user, loading } = useUserStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Sidebar links
+  // Sidebar links with Lucide icons
   const sidebarLinks = [
-    { name: "Dashboard", href: "/owner", icon: "📊" },
-    { name: "View Hotels", href: "/owner/hotels", icon: "🏨" },
-    { name: "Add Hotel", href: "/owner/hotels/new", icon: "🏨" },
-    { name: "Manage Rooms", href: "/owner/rooms", icon: "🛏️" },
-    { name: "Statistics", href: "/owner/statistics", icon: "📈" },
-    { name: "Bookings", href: "/owner/bookings", icon: "📅" },
+    { name: "Dashboard", href: "/owner", icon: <LayoutDashboard size={20} /> },
+    { name: "View Hotels", href: "/owner/hotels", icon: <Building2 size={20} /> },
+    { name: "Add Hotel", href: "/owner/hotels/new", icon: <PlusSquare size={20} /> },
+    { name: "Manage Rooms", href: "/owner/rooms", icon: <Bed size={20} /> },
+    { name: "Bookings", href: "/owner/bookings", icon: <Calendar size={20} /> },
   ];
 
   const toggleSidebar = () => {
@@ -38,20 +41,7 @@ const OwnerLayout = () => {
               onClick={toggleSidebar}
               className="p-2 mr-2 text-gray-700 rounded-md hover:bg-gray-100"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <Menu size={24} />
             </button>
             <Logo to="/owner" />
           </div>
@@ -77,7 +67,7 @@ const OwnerLayout = () => {
                 to={link.href}
                 className="flex items-center p-2 text-gray-700 rounded-md hover:bg-gray-100"
               >
-                <span className="mr-2">{link.icon}</span>
+                <span className="mr-3 text-gray-500">{link.icon}</span>
                 {link.name}
               </Link>
             ))}

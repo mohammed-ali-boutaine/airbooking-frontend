@@ -66,20 +66,19 @@ export const useUserStore = create<Store>((set) => ({
     }
   },
 
-  updateUser: async (updatedUser) => {
+  updateUser: async (updatedUser:UserType) => {
     try {
-      console.log("updt",updatedUser);
-      
+      console.log("Updating user with data:", updatedUser);
+  
       set({ loading: true, error: null });
-
-      // Create FormData if we're uploading profile image
+  
       let requestData: any = updatedUser;
-      let headers = {};
-
+      const headers: Record<string, string> = {};
+  
+      // If we have a profile picture (File), use FormData
       if (updatedUser.profile_path instanceof File) {
         const formData = new FormData();
-
-        // Add all non-file fields to FormData
+  
         Object.entries(updatedUser).forEach(([key, value]) => {
           if (value !== null && value !== undefined) {
             if (value instanceof File) {
@@ -91,42 +90,36 @@ export const useUserStore = create<Store>((set) => ({
             }
           }
         });
-
+  
         requestData = formData;
-        headers = { "Content-Type": "multipart/form-data" };
+        headers["Content-Type"] = "multipart/form-data"; // axios needs this ONLY when sending FormData
       }
-
-      // Use PATCH for partial updates
-      const response = await axiosInstance.patch<ApiResponse>(
-        "/me",
-        requestData,
-        { headers }
-      );
-      console.log(response);
-      
-      // Update state with the returned user data
+  
+      const response = await axiosInstance.patch<ApiResponse>("/me", requestData, { headers });
+  
+      console.log("User updated:", response.data);
+  
       set({
         user: response.data.user,
         loading: false,
       });
-
+  
       return response.data.user;
     } catch (error) {
       console.error("Update user error:", error);
-
-      // Capture specific error message if available
+  
       const errorMessage =
-        axios.isAxiosError(error) && (error as AxiosError<{message: string}>).response?.data?.message
-          ? (error as AxiosError<{message: string}>).response?.data.message
+        axios.isAxiosError(error) && (error as AxiosError<{ message: string }>).response?.data?.message
+          ? (error as AxiosError<{ message: string }>).response?.data.message
           : error instanceof Error
           ? error.message
           : "Failed to update user";
-
+  
       set({
         loading: false,
         error: errorMessage,
       });
-
+  
       throw error;
     }
   },

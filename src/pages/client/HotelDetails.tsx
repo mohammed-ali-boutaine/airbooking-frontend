@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import { Hotel } from '../../types/hotel';
+import React, { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import axios from "axios";
+import { Hotel } from "../../types/hotel";
 
 const HotelDetails: React.FC = () => {
   const { id } = useParams();
@@ -17,8 +17,8 @@ const HotelDetails: React.FC = () => {
         setHotel(response.data.data);
         setError(null);
       } catch (err) {
-        setError('Failed to fetch hotel details');
-        console.error('Error fetching hotel:', err);
+        setError("Failed to fetch hotel details");
+        console.error("Error fetching hotel:", err);
       } finally {
         setLoading(false);
       }
@@ -35,20 +35,20 @@ const HotelDetails: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         {hotel.cover_path && (
-          <img 
-            src={hotel.cover_path} 
-            alt={hotel.name} 
+          <img
+            src={hotel.cover_path}
+            alt={hotel.name}
             className="w-full h-96 object-cover rounded-lg mb-6"
           />
         )}
-        
+
         <h1 className="text-4xl font-bold mb-4">{hotel.name}</h1>
-        
+
         <div className="flex items-center text-gray-600 mb-4">
-          <span className="mr-4">{hotel.city}, {hotel.country}</span>
-          {hotel.owner && (
-            <span>Owned by: {hotel.owner.name}</span>
-          )}
+          <span className="mr-4">
+            {hotel.city}, {hotel.country}
+          </span>
+          {hotel.owner && <span>Owned by: {hotel.owner.name}</span>}
         </div>
 
         <div className="prose max-w-none mb-8">
@@ -56,16 +56,12 @@ const HotelDetails: React.FC = () => {
         </div>
 
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Rooms</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {hotel.rooms?.map((room) => (
-              <div key={room.id} className="border rounded-lg p-4">
-                <h3 className="text-xl font-semibold mb-2">{room.name}</h3>
-                <p className="text-gray-600 mb-2">Price: ${room.price}</p>
-                <p className="text-gray-700">{room.description}</p>
-              </div>
-            ))}
-          </div>
+          <Link
+            to={`/hotels/${id}/rooms`}
+            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            View Available Rooms
+          </Link>
         </div>
 
         {hotel.reviews && hotel.reviews.length > 0 && (
@@ -91,4 +87,4 @@ const HotelDetails: React.FC = () => {
   );
 };
 
-export default HotelDetails; 
+export default HotelDetails;

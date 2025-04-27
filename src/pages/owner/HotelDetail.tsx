@@ -32,7 +32,7 @@ const HotelDetail: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<HotelType>({
-    id:0,
+    id: 0,
     name: "",
     address: "",
     city: "",
@@ -53,7 +53,6 @@ const HotelDetail: React.FC = () => {
   useEffect(() => {
     fetchHotel();
     console.log(hotel);
-    
   }, [id]);
 
   const fetchHotel = async () => {
@@ -376,8 +375,8 @@ const HotelDetail: React.FC = () => {
                 {hotel.profile_path && (
                   <div className="absolute bottom-4 left-4">
                     <img
-                  src={`${hotel.profile_path}`}
-                  alt={`${hotel.name} logo`}
+                      src={`${hotel.profile_path}`}
+                      alt={`${hotel.name} logo`}
                       className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
                     />
                   </div>
@@ -508,6 +507,34 @@ const HotelDetail: React.FC = () => {
                       <span className="text-gray-500">No tags available</span>
                     )}
                   </div>
+                </div>
+
+                {/* Rooms Section */}
+                <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+                  <h2 className="text-xl font-semibold mb-4">Rooms</h2>
+                  {hotel.rooms && hotel.rooms.length > 0 ? (
+                    hotel.rooms.map((room) => (
+                      <div
+                        key={room.id}
+                        className="flex justify-between items-center py-2 border-b last:border-b-0"
+                      >
+                        <div>
+                          <p className="font-medium">
+                            {room.name} (#{room.room_number})
+                          </p>
+                          <p className="text-sm text-gray-600">{room.type}</p>
+                        </div>
+                        <button
+                          onClick={() => navigate(`/rooms/${room.id}`)}
+                          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500">No rooms available</p>
+                  )}
                 </div>
               </div>
             </div>

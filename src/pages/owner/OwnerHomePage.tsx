@@ -46,19 +46,21 @@ const OwnerHomePage: React.FC = () => {
     fetchStatistics();
   }, []);
 
-  // const fetchStatistics = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await axiosInstance.get("/owner/statistics");
-  //     setStats(response.data);
-  //     setError(null);
-  //   } catch (err) {
-  //     console.error("Error fetching statistics:", err);
-  //     setError("Failed to load statistics");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  const fetchStatistics = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axiosInstance.get("/owner/statistics");
+      console.log(response);
+      
+      setStats(response.data.data);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching statistics:", err);
+      setError("Failed to load statistics");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -67,7 +69,10 @@ const OwnerHomePage: React.FC = () => {
     }).format(amount);
   };
 
-  const formatMonthlyData = (data: Statistics["monthly_revenue"]) => {
+  const formatMonthlyData = (data: Statistics["monthly_revenue"] | undefined) => {
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
     const months = [
       "Jan",
       "Feb",
@@ -105,7 +110,7 @@ const OwnerHomePage: React.FC = () => {
   }
 
   if (!stats) return null;
-  return "home page"
+  // return "home page"
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">

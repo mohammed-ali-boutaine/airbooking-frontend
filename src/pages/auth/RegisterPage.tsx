@@ -7,68 +7,77 @@ import { notifyError, notifySuccess } from "../../utils/toast";
 import axiosInstance from "../../utils/axios";
 
 interface RegisterFormData {
-     name: string;
-     email: string;
-     password: string;
-   }
+  name: string;
+  email: string;
+  password: string;
+  profile_path: File | null;
+}
 
-const LoginPage = () => {
-
-     
+const RegisterPage = () => {
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
     password: "",
+    profile_path: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-
   const setUser = useUserStore((state) => state.setUser);
-  // handle input change
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value, files } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        name === "profile_path"
+          ? files && files[0]
+            ? files[0]
+            : null
+          : value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-     const reposne = await axiosInstance.post("/register", formData);
-     const data = reposne.data;
-     console.log(data);
+      // build FormData
+      const payload = new FormData();
+      payload.append("name", formData.name);
+      payload.append("email", formData.email);
+      payload.append("password", formData.password);
+      if (formData.profile_path) {
+        payload.append("profile_path", formData.profile_path);
+      }
 
-    //  localStorage.setItem("token", data.token);
-// console.log(data);
-
-     // set user :
-     setUser(data.user,data.token)
-
-     notifySuccess("Account created successfully!");
-     navigate("/");
-   } catch (err: any) {
-     if (err.response?.status === 422) {
-       const errorMessages = Object.values(err.response.data.errors).flat();
-       notifyError(errorMessages.join("\n"));
-     } else {
-       notifyError(err.response?.data?.message || "Registration failed");
-     }
-   } finally {
-     setLoading(false);
-   }
+      const response = await axiosInstance.post("/register", payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const data = response.data;
+      setUser(data.user, data.token);
+      notifySuccess("Account created successfully!");
+      navigate("/");
+    } catch (err: any) {
+      if (err.response?.status === 422) {
+        const errors = Object.values(err.response.data.errors)
+          .flat()
+          .join("\n");
+        notifyError(errors);
+      } else {
+        notifyError(err.response?.data?.message || "Registration failed");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
-           <h2 className="text-[var(--primary-color)]  text-2xl font-bold mb-4 ">
+      <h2 className="text-[var(--primary-color)]  text-2xl font-bold mb-4 ">
         Create an Account
       </h2>
-
       <form onSubmit={handleSubmit}>
         <Input
           name="name"
@@ -77,32 +86,48 @@ const LoginPage = () => {
           placeholder="your full name here ..."
           value={formData.name}
           onChange={handleChange}
+          required
         />
-
         <Input
+          name="email"
           type="email"
           label="Email"
-          name="email"
           placeholder="example@example.com"
           value={formData.email}
           onChange={handleChange}
+          required
         />
-
         <Input
+          name="password"
           type="password"
           label="Password"
-          name="password"
           placeholder="strong password"
           value={formData.password}
           onChange={handleChange}
           required
         />
 
+        {/* New file upload field */}
+        <div className="mb-4">
+          <label
+            htmlFor="profile_path"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Profile Image
+          </label>
+          <input
+            id="profile_path"
+            name="profile_path"
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded cursor-pointer bg-gray-50"
+          />
+        </div>
+
         <div className="mt-6">
           <Button disabled={loading} variant="primary" fullWidth type="submit">
-            
             {loading ? "Creating account..." : "Continue"}
-
           </Button>
         </div>
       </form>
@@ -120,4 +145,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

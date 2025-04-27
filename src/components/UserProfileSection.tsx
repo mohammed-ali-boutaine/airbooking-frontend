@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { User, Mail, Phone, Lock, Camera } from "lucide-react";
+import { User, Mail, Phone, Lock, Camera, MapPin } from "lucide-react";
 import { UserType } from "../types";
 
 interface UserProfileSectionProps {
@@ -19,7 +19,8 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
     name: boolean;
     email: boolean;
     phone: boolean;
-  }>({ name: false, email: false, phone: false });
+    address: boolean;
+  }>({ name: false, email: false, phone: false, address: false });
 
   // State for password change
   const [passwordData, setPasswordData] = useState({
@@ -61,7 +62,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
   };
 
   // Toggle edit mode for fields
-  const toggleEdit = (field: "name" | "email" | "phone") => {
+  const toggleEdit = (field: "name" | "email" | "phone" | "address") => {
     setIsEditing((prev) => ({
       ...prev,
       [field]: !prev[field],
@@ -69,17 +70,28 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
 
     // If we're exiting edit mode, reset the field to original value
     if (isEditing[field]) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: userData[field as keyof UserType],
-      }));
+      if (field === "address") {
+        setFormData((prev) => ({
+          ...prev,
+          address: userData.address,
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          [field]: userData[field as keyof UserType],
+        }));
+      }
     }
   };
 
   // Save changes for a specific field
-  const saveField = async (field: "name" | "email" | "phone") => {
+  const saveField = async (field: "name" | "email" | "phone" | "address") => {
     try {
-      await onSave({ [field]: formData[field as keyof UserType] });
+      if (field === "address") {
+        await onSave({ address: formData.address });
+      } else {
+        await onSave({ [field]: formData[field as keyof UserType] });
+      }
       setIsEditing((prev) => ({
         ...prev,
         [field]: false,
@@ -187,14 +199,14 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
         const formData = new FormData();
         formData.append("profile_path", file);
 
-        // Send the FormData object to the parent component's onSave function
+        // Send the file directly to the parent component's onSave function
         await onSave({ profile_path: file });
 
-        // Optionally, you can create a preview by generating a temporary URL
+        // Create a preview URL for the uploaded image
         const tempUrl = URL.createObjectURL(file);
         setFormData((prev) => ({
           ...prev,
-          profile_path: tempUrl, // This is just for UI preview until the backend responds
+          profile_path: tempUrl,
         }));
 
         setFeedback({
@@ -225,11 +237,6 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
   // Remove profile image
   const handleRemoveImage = async () => {
     try {
-      // Create FormData to explicitly set profile_path to null
-      const formData = new FormData();
-      formData.append("_method", "PATCH"); // For Laravel method spoofing
-      formData.append("profile_path", "null"); // Send as string 'null' to be interpreted by backend
-
       await onSave({ profile_path: null });
 
       setFeedback({
@@ -276,24 +283,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">
-        Profile Information
-      </h2>
-
-      {/* Feedback message */}
-      {feedback.message && (
-        <div
-          className={`mb-4 p-3 rounded-md ${
-            feedback.type === "success"
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {feedback.message}
-        </div>
-      )}
-
+    <div className="space-y-8">
       {/* Profile Image Section */}
       <div className="flex items-center mb-8">
         <div className="mr-6">
@@ -303,7 +293,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
           >
             {getProfileImageUrl() ? (
               <img
-                src={'http://127.0.0.1:8000/storage/'+getProfileImageUrl()}
+                src={getProfileImageUrl()}
                 alt={userData?.name || "User profile"}
                 className="w-24 h-24 rounded-full object-cover border-2 border-indigo-500"
                 onError={(e) => {
@@ -350,135 +340,188 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
         </div>
       </div>
 
-      {/* Personal Information Section */}
-      <div className="mb-8">
-        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2">
-          Personal Information
-        </h3>
+      {/* Basic Information Section */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-gray-800">
+          Basic Information
+        </h2>
 
         {/* Name Field */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <User size={16} className="mr-2" />
-              Name
-            </label>
-            <button
-              type="button"
-              className="text-sm text-indigo-600 hover:text-indigo-800"
-              onClick={() => toggleEdit("name")}
-            >
-              {isEditing.name ? "Cancel" : "Edit"}
-            </button>
+        <div className="flex items-center space-x-4">
+          <User className="w-5 h-5 text-gray-500" />
+          <div className="flex-1">
+            {isEditing.name ? (
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => saveField("name")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => toggleEdit("name")}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">{formData.name}</span>
+                <button
+                  onClick={() => toggleEdit("name")}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
           </div>
-          {isEditing.name ? (
-            <div className="flex">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-              <button
-                type="button"
-                className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                onClick={() => saveField("name")}
-              >
-                Save
-              </button>
-            </div>
-          ) : (
-            <p className="mt-1 text-gray-900">{formData.name}</p>
-          )}
         </div>
 
         {/* Email Field */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
-            <label className=" text-sm font-medium text-gray-700 flex items-center">
-              <Mail size={16} className="mr-2" />
-              Email
-            </label>
-            <button
-              type="button"
-              className="text-sm text-indigo-600 hover:text-indigo-800"
-              onClick={() => toggleEdit("email")}
-            >
-              {isEditing.email ? "Cancel" : "Edit"}
-            </button>
+        <div className="flex items-center space-x-4">
+          <Mail className="w-5 h-5 text-gray-500" />
+          <div className="flex-1">
+            {isEditing.email ? (
+              <div className="flex space-x-2">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => saveField("email")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => toggleEdit("email")}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">{formData.email}</span>
+                <button
+                  onClick={() => toggleEdit("email")}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
           </div>
-          {isEditing.email ? (
-            <div className="flex">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-              <button
-                type="button"
-                className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                onClick={() => saveField("email")}
-              >
-                Save
-              </button>
-            </div>
-          ) : (
-            <p className="mt-1 text-gray-900">{formData.email}</p>
-          )}
         </div>
 
         {/* Phone Field */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
-            <label className=" text-sm font-medium text-gray-700 flex items-center">
-              <Phone size={16} className="mr-2" />
-              Phone
-            </label>
+        <div className="flex items-center space-x-4">
+          <Phone className="w-5 h-5 text-gray-500" />
+          <div className="flex-1">
+            {isEditing.phone ? (
+              <div className="flex space-x-2">
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone || ""}
+                  onChange={handleInputChange}
+                  className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => saveField("phone")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => toggleEdit("phone")}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700">
+                  {formData.phone || "Not set"}
+                </span>
+                <button
+                  onClick={() => toggleEdit("phone")}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  Edit
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Address Section */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <MapPin className="w-5 h-5 text-gray-500" />
+            <h3 className="text-lg font-medium text-gray-800">Address</h3>
             <button
-              type="button"
-              className="text-sm text-indigo-600 hover:text-indigo-800"
-              onClick={() => toggleEdit("phone")}
+              onClick={() => toggleEdit("address")}
+              className="text-blue-600 hover:text-blue-800"
             >
-              {isEditing.phone ? "Cancel" : "Edit"}
+              {isEditing.address ? "Cancel" : "Edit"}
             </button>
           </div>
-          {isEditing.phone ? (
-            <div className="flex">
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone || ""}
-                onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Enter your phone number"
-              />
-              <button
-                type="button"
-                className="ml-2 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                onClick={() => saveField("phone")}
-              >
-                Save
-              </button>
+
+          {isEditing.address ? (
+            <div className="space-y-4 pl-9">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Address
+                </label>
+                <textarea
+                  name="address"
+                  value={formData.address || ""}
+                  onChange={(e) => handleInputChange(e as any)}
+                  className="mt-1 px-3 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Enter your full address"
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => saveField("address")}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Save Address
+                </button>
+              </div>
             </div>
           ) : (
-            <p className="mt-1 text-gray-900">
-              {formData.phone || "No phone number provided"}
-            </p>
+            <div className="pl-9 space-y-2">
+              {formData.address ? (
+                <p className="text-gray-700 whitespace-pre-line">
+                  {formData.address}
+                </p>
+              ) : (
+                <p className="text-gray-500">No address set</p>
+              )}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Security Section */}
-      <div>
-        <h3 className="text-lg font-medium text-gray-800 mb-4 border-b pb-2 flex items-center">
-          <Lock size={18} className="mr-2" />
-          Security
-        </h3>
-
-        {/* Password Fields */}
+      {/* Password Change Section */}
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold text-gray-800">Change Password</h2>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -489,10 +532,9 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
               name="currentPassword"
               value={passwordData.currentPassword}
               onChange={handlePasswordChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 px-3 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700">
               New Password
@@ -502,10 +544,9 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
               name="newPassword"
               value={passwordData.newPassword}
               onChange={handlePasswordChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 px-3 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Confirm New Password
@@ -515,19 +556,30 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
               name="confirmPassword"
               value={passwordData.confirmPassword}
               onChange={handlePasswordChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="mt-1 px-3 py-2 border rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <button
-            type="button"
-            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             onClick={submitPasswordChange}
+            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            Update Password
+            Change Password
           </button>
         </div>
       </div>
+
+      {/* Feedback Messages */}
+      {feedback.message && (
+        <div
+          className={`p-4 rounded-md ${
+            feedback.type === "success"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
     </div>
   );
 };
