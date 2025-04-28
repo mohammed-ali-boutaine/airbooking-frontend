@@ -83,7 +83,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, onDelete }) => {
           </Link>
           <div className="flex space-x-2">
             <Link
-              to={`/owner/rooms/${room.id}/edit`}
+              to={`/owner/hotels/${room.hotel?.id}/rooms/${room.id}/edit`}
               className="p-2 text-yellow-600 hover:text-yellow-800 rounded-full hover:bg-yellow-50"
             >
               <Edit size={18} />

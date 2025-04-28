@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Loader2, Plus } from "lucide-react";
-// import { RoomCard } from "./RoomCard";
 import axiosInstance from "../../utils/axios";
-import { Hotel, Room } from "../../types";
+import { Room } from "../../types";
 import { RoomCard } from "../../components/room/RoomCard";
 
 const HotelRooms: React.FC = () => {
   const { hotelId } = useParams<{ hotelId: string }>();
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [hotel, setHotel] = useState<Hotel | null>(null);
+  const [hotelName, setHotelName] = useState<string>("Hotel");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,14 +16,18 @@ const HotelRooms: React.FC = () => {
     const fetchRooms = async () => {
       try {
         setLoading(true);
-        // Fetch hotel details
-        const hotelResponse = await axiosInstance.get(`/hotels/${hotelId}`);
-        setHotel(hotelResponse.data);
-        
+
         // Fetch rooms for this hotel
-        const roomsResponse = await axiosInstance.get(`/hotels/${hotelId}/rooms`);
-        // Ensure rooms is an array before setting state
+        const roomsResponse = await axiosInstance.get(
+          `/hotels/${hotelId}/rooms`
+        );
         const roomsData = roomsResponse.data?.data || roomsResponse.data;
+
+        // Set hotel name if available
+        if (roomsData.length > 0 && roomsData[0]?.hotel?.name) {
+          setHotelName(roomsData[0].hotel.name);
+        }
+
         setRooms(Array.isArray(roomsData) ? roomsData : []);
         setLoading(false);
       } catch (err) {
@@ -42,8 +45,8 @@ const HotelRooms: React.FC = () => {
   const handleDeleteRoom = async (roomId: number) => {
     if (window.confirm("Are you sure you want to delete this room?")) {
       try {
-        await axiosInstance.delete(`/api/rooms/${roomId}`);
-        setRooms(rooms.filter(room => room.id !== roomId));
+        await axiosInstance.delete(`/rooms/${roomId}`);
+        setRooms(rooms.filter((room) => room.id !== roomId));
       } catch (err) {
         setError("Failed to delete room");
         console.error(err);
@@ -68,7 +71,7 @@ const HotelRooms: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">
-            Rooms for {hotel?.name || "Hotel"}
+            Rooms for {hotelName}
           </h1>
           <p className="text-gray-600">{rooms.length} rooms available</p>
         </div>
@@ -80,7 +83,7 @@ const HotelRooms: React.FC = () => {
         </Link>
       </div>
 
-      {!Array.isArray(rooms) || rooms.length === 0 ? (
+      {rooms.length === 0 ? (
         <div className="text-center p-10 bg-gray-50 rounded-lg">
           <h3 className="text-xl font-medium text-gray-600">No rooms yet!</h3>
           <p className="mt-2 text-gray-500">
@@ -96,11 +99,7 @@ const HotelRooms: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {rooms.map((room) => (
-            <RoomCard 
-              key={room.id} 
-              room={room} 
-              onDelete={handleDeleteRoom} 
-            />
+            <RoomCard key={room.id} room={room} onDelete={handleDeleteRoom} />
           ))}
         </div>
       )}

@@ -50,7 +50,7 @@ const OwnerHomePage: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get("/owner/statistics");
-      console.log(response);
+      // console.log(response);
       
       setStats(response.data.data);
       setError(null);

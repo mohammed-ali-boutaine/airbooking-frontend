@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
-import { RoomType } from "../../types";
+import { Room } from "../../types";
 import Input from "../static/Input";
 import TextArea from "../static/TextArea";
 import FileUpload from "../static/FileUpload";
 import AmenitySelector from "./AmenitySelector";
 import LoadingSpinner from "../static/LoadingSpinner";
 import { FaTrash, FaBed, FaUsers, FaDollarSign } from "react-icons/fa";
-// import { log } from "console";
 
 interface RoomFormProps {
   isEdit?: boolean;
@@ -28,12 +27,13 @@ const ROOM_TYPES = [
 ] as const;
 
 const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
-  const { hotelId, roomId } = useParams<{ hotelId: string; roomId: string }>();
+  const { id, hotelId } = useParams<{ id?: string; hotelId?: string }>();
   const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(isEdit);
   const [error, setError] = useState<string | null>(null);
   const [hotelName, setHotelName] = useState<string>("");
-  const [formData, setFormData] = useState<Partial<RoomType>>({
+  const [formData, setFormData] = useState<Partial<Room>>({
     name: "",
     room_number: "",
     type: "Standard",
@@ -52,10 +52,11 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
     if (hotelId) {
       fetchHotelName();
     }
-    if (isEdit && roomId) {
+
+    if (isEdit && id) {
       fetchRoom();
     }
-  }, [hotelId, roomId]);
+  }, [id, hotelId, isEdit]);
 
   const fetchHotelName = async () => {
     try {
@@ -70,12 +71,30 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
   const fetchRoom = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get(`/rooms/${roomId}`);
-      const roomData = response.data.data;
-      setFormData(roomData);
+      const response = await axiosInstance.get(`/rooms/${id}`);
+      const roomData: Room = response.data.data;
+
+      if (roomData.hotel) {
+        setHotelName(roomData.hotel.name);
+      }
+
+      setFormData({
+        name: roomData.name,
+        room_number: roomData.room_number,
+        type: roomData.type,
+        floor: roomData.floor,
+        description: roomData.description,
+        bed_numbers: roomData.bed_numbers,
+        capacity: roomData.capacity,
+        price_per_night: roomData.price_per_night,
+        is_available: roomData.is_available,
+        amenities: roomData.amenities || [],
+      });
+
       if (roomData.images) {
         setUploadedImages(roomData.images.map((img: any) => img.image_path));
       }
+
       setError(null);
     } catch (err) {
       console.error("Error fetching room:", err);
@@ -115,7 +134,6 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newImages = Array.from(e.target.files);
-      // Validate file types
       const validImages = newImages.filter(
         (file) =>
           file.type.startsWith("image/") &&
@@ -138,7 +156,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
 
   const removeUploadedImage = async (imagePath: string) => {
     try {
-      await axiosInstance.delete(`/rooms/${roomId}/images/${imagePath}`);
+      await axiosInstance.delete(`/rooms/${id}/images/${imagePath}`);
       setUploadedImages((prev) => prev.filter((path) => path !== imagePath));
     } catch (err) {
       console.error("Error removing image:", err);
@@ -146,8 +164,8 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
     }
   };
 
-  const uploadImages = async (roomId: number) => {
-    if (!roomId) {
+  const uploadImages = async (id: number) => {
+    if (!id) {
       console.error("No room ID provided for image upload");
       return;
     }
@@ -159,7 +177,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
         formData.append("is_primary", "false");
 
         const response = await axiosInstance.post(
-          `/rooms/${roomId}/images`,
+          `/rooms/${id}/images`,
           formData,
           {
             headers: {
@@ -172,7 +190,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
 
       const uploadedPaths = await Promise.all(uploadPromises);
       setUploadedImages((prev) => [...prev, ...uploadedPaths]);
-      setImages([]); // Clear the images array after successful upload
+      setImages([]);
     } catch (err) {
       console.error("Error uploading images:", err);
       setError("Failed to upload some images. Please try again.");
@@ -201,22 +219,24 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
 
       let response;
       if (isEdit) {
-        response = await axiosInstance.put(`/rooms/${roomId}`, roomData);
+        response = await axiosInstance.put(`/rooms/${id}`, roomData);
         if (images.length > 0) {
-          await uploadImages(Number(roomId));
+          await uploadImages(Number(id));
         }
       } else {
+        if (!hotelId) {
+          throw new Error("Hotel ID is required to create a room");
+        }
         response = await axiosInstance.post(
           `/hotels/${hotelId}/rooms`,
           roomData
         );
         if (images.length > 0) {
-          // Make sure we have the room ID from the response
-          const newRoomId = response.data.id || response.data.room?.id;
-          if (!newRoomId) {
+          const newid = response.data.id || response.data.room?.id;
+          if (!newid) {
             throw new Error("No room ID received from server");
           }
-          await uploadImages(newRoomId);
+          await uploadImages(newid);
         }
       }
 
@@ -225,6 +245,7 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
       console.error("Error saving room:", error);
       setError(
         error.response?.data?.message ||
+          error.message ||
           "Failed to save room. Please try again."
       );
     } finally {
@@ -237,7 +258,6 @@ const RoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        {/* Hotel Name Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">{hotelName}</h1>
           <h2 className="text-2xl font-semibold text-gray-700">

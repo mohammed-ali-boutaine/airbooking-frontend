@@ -43,7 +43,7 @@ const LoginPage = () => {
 
       // Save token
       // localStorage.setItem("token", data.token);
-      console.log(data);
+      // console.log(data);
       
       setUser(data.user, data.token);
 

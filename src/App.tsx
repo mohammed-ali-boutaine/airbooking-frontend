@@ -58,10 +58,14 @@ const App: React.FC = () => {
           <Route path="hotels/:id" element={<HotelDetail />} />
           <Route path="hotels/:id/edit" element={<HotelForm />} />
 
+          {/* Update room routes to correctly handle params */}
           <Route path="hotels/:hotelId/rooms" element={<HotelRooms />} />
           <Route path="hotels/:hotelId/rooms/new" element={<RoomForm />} />
+          <Route
+            path="hotels/:hotelId/rooms/:id/edit"
+            element={<RoomForm isEdit={true} />}
+          />
           <Route path="rooms/:id" element={<RoomDetail />} />
-          <Route path="rooms/:id/edit" element={<RoomForm />} />
 
           <Route path="rooms" element={<Rooms />} />
           <Route path="booking" element={<ProfilePage />} />
