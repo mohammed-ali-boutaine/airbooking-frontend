@@ -14,13 +14,13 @@ import { useEffect } from "react";
 import { useUserStore } from "./store/useUserStore";
 import ClientLayout from "./layouts/ClientLayout";
 // import RoomList from "./components/room/RoomList";
-import RoomForm from "./components/room/RoomForm";
 // import OwnerRooms from "./pages/owner/OwnerRooms";
 // import OwnerHomePage from "./pages/owner/OwnerHomePage";
 import Rooms from "./pages/owner/Rooms";
 import RoomDetail from "./pages/owner/RoomDetail";
 import OwnerHomePage from "./pages/owner/OwnerHomePage";
 import HotelRooms from "./pages/owner/HotelRooms";
+import ImprovedRoomForm from "./components/room/ImprovedRoomForm";
 // import OwnerDashboard from "./components/owner/OwnerDashboard";
 
 const App: React.FC = () => {
@@ -60,10 +60,13 @@ const App: React.FC = () => {
 
           {/* Update room routes to correctly handle params */}
           <Route path="hotels/:hotelId/rooms" element={<HotelRooms />} />
-          <Route path="hotels/:hotelId/rooms/new" element={<RoomForm />} />
+          <Route
+            path="hotels/:hotelId/rooms/new"
+            element={<ImprovedRoomForm />}
+          />
           <Route
             path="hotels/:hotelId/rooms/:id/edit"
-            element={<RoomForm isEdit={true} />}
+            element={<ImprovedRoomForm isEdit={true} />}
           />
           <Route path="rooms/:id" element={<RoomDetail />} />
 

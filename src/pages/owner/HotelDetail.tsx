@@ -576,7 +576,7 @@ const HotelDetail: React.FC = () => {
                       <div className="flex space-x-2">
                         <button
                           onClick={() =>
-                            navigate(`/owner/rooms/${room.id}/edit`)
+                            navigate(`/owner/hotels/${id}/rooms/${room.id}/edit`)
                           }
                           className="text-blue-600 hover:text-blue-800"
                         >

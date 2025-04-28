@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { User, Mail, Phone, Lock, Camera, MapPin } from "lucide-react";
+import { User, Mail, Phone, Camera, MapPin } from "lucide-react";
 import { UserType } from "../types";
 
 interface UserProfileSectionProps {

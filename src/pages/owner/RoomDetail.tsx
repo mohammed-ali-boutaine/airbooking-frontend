@@ -69,7 +69,9 @@ const RoomDetail: React.FC = () => {
           {room.images && room.images.length > 0 ? (
             <>
               <img
-                src={room.images[activeImageIndex].image_path}
+                src={`http://127.0.0.1:8000/storage/${room.images[activeImageIndex].image_path}`}
+                // src={`http://127.0.0.1:8000/storage/`}
+
                 alt={`Room ${room.room_number}`}
                 className="w-full h-full object-cover"
               />
@@ -144,7 +146,7 @@ const RoomDetail: React.FC = () => {
             </div>
             <div className="flex space-x-4 mt-4">
               <button
-                onClick={() => navigate(`/owner/rooms/${id}/edit`)}
+                onClick={() => navigate(`/owner/hotels/${room.hotel?.id}/rooms/${id}/edit`)}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
                 Edit Room

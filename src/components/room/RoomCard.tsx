@@ -13,7 +13,9 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, onDelete }) => {
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
       {room.images && room.images.length > 0 ? (
         <img
-          src={room.images[0].image_path}
+          // src={room.images[0].image_path}
+          src={`http://127.0.0.1:8000/storage/${room.images[0].image_path}`}
+
           alt={room.name}
           className="w-full h-48 object-cover"
         />
