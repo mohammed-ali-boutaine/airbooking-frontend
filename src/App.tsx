@@ -21,6 +21,10 @@ import RoomDetail from "./pages/owner/RoomDetail";
 import OwnerHomePage from "./pages/owner/OwnerHomePage";
 import HotelRooms from "./pages/owner/HotelRooms";
 import ImprovedRoomForm from "./components/room/ImprovedRoomForm";
+import OwnerBookings from "./pages/owner/OwnerBookings";
+import HotelBookings from "./pages/owner/HotelBookings";
+// import OwnerBookings from "./pages/owner/OwnerBookings";
+// import HotelBookings from "./pages/owner/HotelBookings";
 // import OwnerDashboard from "./components/owner/OwnerDashboard";
 
 const App: React.FC = () => {
@@ -71,6 +75,11 @@ const App: React.FC = () => {
           <Route path="rooms/:id" element={<RoomDetail />} />
 
           <Route path="rooms" element={<Rooms />} />
+
+          {/* New Booking Routes */}
+          <Route path="bookings" element={<OwnerBookings />} />
+          <Route path="hotels/:hotelId/bookings" element={<HotelBookings />} />
+
           <Route path="booking" element={<ProfilePage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>

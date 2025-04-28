@@ -39,8 +39,8 @@ const ROLE_SPECIFIC_ITEMS = {
   ],
   owner: [
     { to: "/owner/profile", icon: User, label: "Profile" },
-    { to: "/owner/properties", icon: Home, label: "My Properties" },
-    { to: "/owner/messages", icon: MessageSquare, label: "Messages" },
+    { to: "/owner/hotels", icon: Home, label: "My Hotels" },
+    // { to: "/owner/messages", icon: MessageSquare, label: "Messages" },
     { to: "/owner/help", icon: HelpCircle, label: "Help Center" },
     { to: "/owner/contact", icon: Phone, label: "Contact" },
   ],

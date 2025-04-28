@@ -131,6 +131,34 @@ const Hotels: React.FC = () => {
                     name="Rooms"
                   />
                 </div>
+                <div className="flex gap-2 mt-2">
+                  <Link to={`/owner/hotels/${hotel.id}/bookings`}       className="flex-1 gap-1.5 py-2 px-3 text-center border border-gray-300 rounded-md hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-all duration-300 text-gray-700 flex items-center justify-center"
+ >
+            
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500 hover:text-blue-600 transition-colors duration-300"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 7h18M3 12h18m-7 5h7m-7 0a2 2 0 01-2-2m2 2a2 2 0 002-2m-2 2a2 2 0 01-2-2m2 2a2 2 0 002-2"
+                      />
+                    </svg>
+                      Bookings
+                    {/* </Button> */}
+                  {/* Booking */}
+                  </Link>
+
+                  {/* <DetailLink
+                    to={`/owner/hotels/${hotel.id}/rooms`}
+                    name="Rooms"
+                  /> */}
+                </div>
               </div>
             </div>
           </div>

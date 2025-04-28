@@ -222,8 +222,8 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
     }
 
     try {
-      const totalFiles = images.length;
-      let uploadedFiles = 0;
+      // const totalFiles = images.length;
+      // let uploadedFiles = 0;
 
       const uploadPromises = images.map(async (image) => {
         const formData = new FormData();
@@ -242,7 +242,7 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
         );
         console.log(response);
         
-        uploadedFiles++;
+        // uploadedFiles++;
         return response.data.image_path;
       });
 
