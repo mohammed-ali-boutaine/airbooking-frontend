@@ -1,9 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Hotel } from "../../types";
 import HotelCardSkeleton from "./HotelCardSkeleton";
 import HotelCard from "./HotelCard";
-// import HotelCard from "./HotelCard";
-// import HotelCardSkeleton from "./HotelCardSkeleton";
 
 interface HotelGridProps {
   hotels: Hotel[];
@@ -16,6 +14,7 @@ interface HotelGridProps {
   };
   gap?: string;
   skeletonCount?: number;
+  itemsPerPage?: number;
 }
 
 const HotelGrid: React.FC<HotelGridProps> = ({
@@ -29,7 +28,26 @@ const HotelGrid: React.FC<HotelGridProps> = ({
   },
   gap = "gap-x-6 gap-y-8",
   skeletonCount = 8,
+  itemsPerPage = 8,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(hotels.length / itemsPerPage);
+
+  // Get current hotels to display
+  const indexOfLastHotel = currentPage * itemsPerPage;
+  const indexOfFirstHotel = indexOfLastHotel - itemsPerPage;
+  const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
+
+  // Change page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  // Navigate to previous and next page
+  const goToPrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const goToNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
   // Determine grid columns based on screen size
   const getGridColsClasses = () => {
     const classes = [];
@@ -67,13 +85,86 @@ const HotelGrid: React.FC<HotelGridProps> = ({
     );
   }
 
-  // Render actual hotel cards
+  // Render actual hotel cards with pagination
   return (
-    <div className={gridClasses}>
-      {hotels.map((hotel) => (
-        <HotelCard key={hotel.id} hotel={hotel} />
-      ))}
-    </div>
+    <>
+      <div className={gridClasses}>
+        {currentHotels.map((hotel) => (
+          <HotelCard key={hotel.id} hotel={hotel} />
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center mt-8 space-x-2">
+          <button
+            onClick={goToPrevPage}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === 1
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            Previous
+          </button>
+
+          {/* Page numbers */}
+          <div className="flex space-x-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              (number) => {
+                // Display current page, first page, last page, and pages adjacent to current page
+                if (
+                  number === 1 ||
+                  number === totalPages ||
+                  (number >= currentPage - 1 && number <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={number}
+                      onClick={() => paginate(number)}
+                      className={`w-8 h-8 rounded-md ${
+                        currentPage === number
+                          ? "bg-blue-600 text-white"
+                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {number}
+                    </button>
+                  );
+                }
+
+                // Add ellipsis for gaps in pagination
+                if (
+                  (number === 2 && currentPage > 3) ||
+                  (number === totalPages - 1 && currentPage < totalPages - 2)
+                ) {
+                  return (
+                    <span key={number} className="px-2">
+                      ...
+                    </span>
+                  );
+                }
+
+                return null;
+              }
+            )}
+          </div>
+
+          <button
+            onClick={goToNextPage}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded-md ${
+              currentPage === totalPages
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            }`}
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 
