@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Heart, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Hotel } from "../../types";
 import HotelCardSkeleton from "./HotelCardSkeleton";
-// import HotelCardSkeleton from "./HotelCardSkeleton";
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -16,22 +15,42 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel, loading = false }) => {
   const [isImageLoaded, setIsImageLoaded] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
-  // Create images array from hotel data
-  const images = hotel.profile_path
-    ? [
-        {
-          url: `http://127.0.0.1:8000/storage/${hotel.profile_path}`,
-          alt: hotel.name,
-        },
-      ]
-    : [{ url: "/placeholder-hotel.png", alt: "Hotel placeholder" }];
+  // Create images array from hotel data and room images
+  const images = [];
 
-  // Add cover image if available
+  // Add hotel profile image if available
+  if (hotel.profile_path) {
+    images.push({
+      url: `http://127.0.0.1:8000/storage/${hotel.profile_path}`,
+      alt: hotel.name,
+    });
+  }
+
+  // Add hotel cover image if available
   if (hotel.cover_path) {
     images.push({
       url: `http://127.0.0.1:8000/storage/${hotel.cover_path}`,
       alt: `${hotel.name} - cover`,
     });
+  }
+
+  // Add room images if available
+  if (hotel.rooms && hotel.rooms.length > 0) {
+    hotel.rooms.forEach((room) => {
+      if (room.images && room.images.length > 0) {
+        room.images.forEach((image) => {
+          images.push({
+            url: `http://127.0.0.1:8000/storage/${image.image_path}`,
+            alt: `${hotel.name} - ${room.name}`,
+          });
+        });
+      }
+    });
+  }
+
+  // If no images are available, use a placeholder
+  if (images.length === 0) {
+    images.push({ url: "/placeholder-hotel.png", alt: "Hotel placeholder" });
   }
 
   const handlePrevImage = (e: React.MouseEvent) => {
