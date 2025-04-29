@@ -47,3 +47,9 @@ export interface BookingType {
   created_at: string;
   updated_at: string;
 }
+
+export interface Tag {
+  id: string;
+  name: string;
+  icon_path: string; // URL or class for the icon
+}

@@ -12,22 +12,24 @@ import ProfilePage from "../pages/ProfilePage";
 import HotelBookings from "../pages/owner/HotelBookings";
 import OwnerBookings from "../pages/owner/OwnerBookings";
 import PrivateRoute from "./PrivateRoute";
-import { useUserStore } from "../store/useUserStore";
-import { useEffect } from "react";
+// import { useUserStore } from "../store/useUserStore";
+// import { useEffect } from "react";
 import NotFound from "../components/static/NotFound";
+import { UserType } from "../types";
 
-export const OwnerRoutes = () => {
-  const { user, fetchUserFromToken } = useUserStore();
+export const OwnerRoutes = (user?: UserType | null) => {
+  //   const { user, fetchUserFromToken } = useUserStore();
 
-  useEffect(() => {
-    if (!user) {
-      fetchUserFromToken();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   useEffect(() => {
+  //     if (!user) {
+  //       fetchUserFromToken();
+  //     }
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   }, []);
 
   return (
-//     <Routes>
+    //     <Routes>
+    user && (
       <Route
         path="/owner"
         element={
@@ -57,8 +59,9 @@ export const OwnerRoutes = () => {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
-
       </Route>
-//     </Routes>
+    )
+
+    //     </Routes>
   );
 };
