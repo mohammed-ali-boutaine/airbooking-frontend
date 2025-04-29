@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Hotel, Tag } from "../types";
 import axiosInstance from "../utils/axios";
 import TagList from "../components/tags/TagList";
+import HotelGrid from "../components/hotel/HotelGrid";
 
 const Homepage: React.FC = () => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -19,19 +20,25 @@ const Homepage: React.FC = () => {
           axiosInstance.get("/tags"),
         ]);
 
-        // console.log(tagsResponse.data.data);
-        
+        setHotels(hotelsResponse.data.data.data || []);
 
-        setHotels(hotelsResponse.data.data || []);
+        console.log("Tags response:", tagsResponse.data.data);
+        console.log("Hotels response:", hotelsResponse.data.data.data);
+        
+        
         setTags(tagsResponse.data.data || []);
 
         // Set first tag as active if available
         if (tagsResponse.data.data && tagsResponse.data.data.length > 0) {
           setActiveTag(tagsResponse.data.data[0].id);
         }
+
+        // Ensure loading shows for at least 1 second for better UX
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
       } catch (error) {
         console.error("Error fetching data:", error);
-      } finally {
         setLoading(false);
       }
     };
@@ -41,8 +48,14 @@ const Homepage: React.FC = () => {
 
   const handleTagChange = (tagId: string) => {
     setActiveTag(tagId);
-    // Optionally filter hotels based on selected tag
-    // You could make another API call or filter the existing hotels
+    setLoading(true);
+
+    // Simulate filtering hotels based on tag
+    setTimeout(() => {
+      // Here you would actually fetch filtered hotels
+      // For now, just simulate by ending the loading state
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -54,38 +67,20 @@ const Homepage: React.FC = () => {
         </div>
       )}
 
-      {/* Hotels Section */}
+      {/* Hotels Grid Section */}
       <div className="mt-8">
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="w-full max-w-md p-4 rounded-md">
-              <div className="animate-pulse flex space-x-4">
-                <div className="flex-1 space-y-4 py-1">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : hotels.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {hotels.map((hotel) => (
-              <div key={hotel.id} className="border rounded-md shadow-sm p-4">
-                <h3 className="text-lg font-medium">{hotel.name}</h3>
-                <p className="text-gray-600">
-                  {hotel.city}, {hotel.country}
-                </p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500">No hotels found</p>
-          </div>
-        )}
+        <HotelGrid
+          hotels={hotels}
+          loading={loading}
+          columns={{
+            sm: 1,
+            md: 2,
+            lg: 3,
+            xl: 4,
+          }}
+          gap="gap-x-6 gap-y-8"
+          skeletonCount={8}
+        />
       </div>
     </div>
   );
