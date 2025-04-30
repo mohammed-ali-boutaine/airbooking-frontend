@@ -3,42 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../utils/axios";
 import {  HotelType, RoomType } from "../types";
 
-// interface RoomImage {
-//   id: number;
-//   room_id: number;
-//   path: string;
-//   created_at: string;
-//   updated_at: string;
-// }
-
-// interface Room {
-//   id: number;
-//   hotel_id: number;
-//   name: string;
-//   room_number: string;
-//   type: string;
-//   floor: number;
-//   capacity: number;
-//   bed_numbers: number;
-//   price_per_night: string;
-//   description: string;
-//   is_available: boolean;
-//   amenities: string[];
-//   images: RoomImage[];
-//   created_at: string;
-//   updated_at: string;
-//   deleted_at: null | string;
-// }
-
-// interface Hotel {
-//   id: number;
-//   name: string;
-//   city: string;
-//   country: string;
-//   address: string;
-//   profile_path: string;
-//   cover_path: string;
-// }
 
 const RoomDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

@@ -357,7 +357,22 @@ const HotelDetailPage: React.FC = () => {
 
       {/* Available Rooms Section */}
       <div className="border-t pt-8">
-        <h2 className="text-2xl font-bold mb-6">Available Rooms</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Available Rooms</h2>
+          <div className="flex items-center space-x-2">
+            <label htmlFor="sort" className="text-sm text-gray-600">
+              Sort by:
+            </label>
+            <select
+              id="sort"
+              className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="capacity">Capacity</option>
+            </select>
+          </div>
+        </div>
 
         {hotel.rooms && hotel.rooms.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
@@ -406,38 +421,6 @@ const HotelDetailPage: React.FC = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Image thumbnails below main image */}
-                  {room.images && room.images.length > 1 && (
-                    <div className="flex mt-2 overflow-x-auto space-x-2 p-1">
-                      {room.images.slice(0, 4).map((image, index) => (
-                        <div
-                          key={index}
-                          className="w-16 h-12 flex-shrink-0 rounded overflow-hidden"
-                        >
-                          <ImageSlider
-                            images={[
-                              `http://127.0.0.1:8000/storage/${image.image_path}`,
-                            ]}
-                            onImageClick={() => {}}
-                          />
-                        </div>
-                      ))}
-                      {room.images.length > 4 && (
-                        <div className="w-16 h-12 flex-shrink-0 rounded overflow-hidden relative">
-                          <ImageSlider
-                            images={[
-                              `http://127.0.0.1:8000/storage/${room.images[4].image_path}`,
-                            ]}
-                            onImageClick={() => {}}
-                          />
-                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 text-white text-xs font-medium">
-                            +{room.images.length - 4}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
 
                 {/* Room Info */}
@@ -521,68 +504,8 @@ const HotelDetailPage: React.FC = () => {
                           </span>
                         </div>
                       )}
-                      {room.amenities && room.amenities.includes("bathtub") && (
-                        <div className="flex items-center">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 text-gray-500 mr-2"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                          <span className="text-sm text-gray-600">Bathtub</span>
-                        </div>
-                      )}
-                      {room.amenities &&
-                        room.amenities.includes("ocean_view") && (
-                          <div className="flex items-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 text-gray-500 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                            <span className="text-sm text-gray-600">
-                              Ocean view
-                            </span>
-                          </div>
-                        )}
                     </div>
                   </div>
-
-                  {/* Amenities badges */}
-                  {room.amenities && room.amenities.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {room.amenities.slice(0, 3).map((amenity, index) => (
-                        <span
-                          key={index}
-                          className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full"
-                        >
-                          {amenity.replace("_", " ")}
-                        </span>
-                      ))}
-                      {room.amenities.length > 3 && (
-                        <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">
-                          +{room.amenities.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
 
                   {/* Bottom section with price and button */}
                   <div className="flex justify-between items-center border-t pt-4 mt-2">
@@ -592,44 +515,26 @@ const HotelDetailPage: React.FC = () => {
                       </span>
                       <span className="text-gray-600 text-sm">/night</span>
                     </div>
-                    <div className="flex space-x-2">
-                      <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-full transition-colors">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                          />
-                        </svg>
-                      </button>
-                      <Link
-                        to={`/rooms/${room.id}`}
-                        className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+                    <Link
+                      to={`/rooms/${room.id}`}
+                      className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+                    >
+                      <span>View Details</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 ml-1"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <span>View Details</span>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 ml-1"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </Link>
-                    </div>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
               </div>
