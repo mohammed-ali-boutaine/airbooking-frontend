@@ -53,3 +53,53 @@ export interface Tag {
   name: string;
   icon_path: string; // URL or class for the icon
 }
+
+export interface Hotel {
+  id: string;
+  name: string;
+  description: string;
+  address: string;
+  city: string;
+  country: string;
+  phone: string;
+  email: string;
+  website: string;
+  coordinate: {
+    lat: number;
+    lng: number;
+  };
+  cover_path: string;
+  profile_path: string;
+  owner?: {
+    id: string;
+    name: string;
+  };
+  rooms: Room[];
+  tags: Tag[];
+  rooms_min_price_per_night: string;
+  reviews_avg_rating: number;
+}
+
+export interface Room {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  room_number: string;
+  floor: number;
+  capacity: number;
+  price_per_night: string;
+  bed_numbers: number;
+  amenities: string[];
+  images: RoomImage[];
+}
+
+export interface RoomImage {
+  id: number;
+  image_path: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+}
