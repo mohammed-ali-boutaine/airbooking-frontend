@@ -27,8 +27,8 @@ const HotelGrid: React.FC<HotelGridProps> = ({
     xl: 4,
   },
   gap = "gap-x-6 gap-y-8",
-  skeletonCount = 8,
-  itemsPerPage = 8,
+  skeletonCount = 9,
+  itemsPerPage = 12,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
