@@ -40,7 +40,7 @@ const ClientNavBar: React.FC = () => {
           )}
 
           {/* Search Bar */}
-          <div className="hidden md:block flex-grow mx-8">
+          <div className="hidden lg:block flex-grow mx-8">
             <div className="flex items-center justify-center">
               <div className="relative w-full max-w-xl">
                 {loading ? (
