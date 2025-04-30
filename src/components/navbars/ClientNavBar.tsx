@@ -27,7 +27,7 @@ const ClientNavBar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-white shadow-sm border-b border-[#B0B0B0] relative z-50 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
@@ -55,16 +55,12 @@ const ClientNavBar: React.FC = () => {
           {/* User Section */}
           <div className="flex items-center space-x-4">
             {loading ? (
-              // Custom loading skeletons for auth buttons
               <div className="flex items-center space-x-4">
-                {/* <div className="w-20 h-10 bg-gray-200 rounded animate-pulse" /> */}
                 <div className="w-20 h-10 bg-gray-200 rounded animate-pulse" />
               </div>
             ) : user ? (
-              // Show profile section if user is logged in
               <ProfileSection user={user} />
             ) : (
-              // Show login and register buttons if user is not logged in
               <>
                 <Link to="/login">
                   <Button type="button" variant="outline">
@@ -78,7 +74,7 @@ const ClientNavBar: React.FC = () => {
                 {/* Dropdown Menu */}
                 <div className="relative" ref={menuRef}>
                   <button
-                    className="p-1 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none"
+                    className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none transition-colors duration-200"
                     onClick={() => setMenuOpen(!menuOpen)}
                   >
                     <svg
@@ -97,47 +93,50 @@ const ClientNavBar: React.FC = () => {
                     </svg>
                   </button>
 
-                  {menuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 ring-1 ring-black ring-opacity-5">
-                      {loading ? (
-                        // Show loading indicators for menu items
-                        <>
-                          {[1, 2, 3, 4].map((item) => (
-                            <div key={item} className="px-4 py-2">
-                              <div className="h-4 bg-gray-200 rounded animate-pulse" />
-                            </div>
-                          ))}
-                        </>
-                      ) : (
-                        <>
-                          <Link
-                            to="/contact"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Contact
-                          </Link>
-                          <Link
-                            to="/about"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            About
-                          </Link>
-                          <Link
-                            to="/features"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Features
-                          </Link>
-                          <Link
-                            to="/help-center"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            Help Center
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  )}
+                  <div
+                    className={`absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 ring-1 ring-[#B0B0B0] transform transition-all duration-200 ease-in-out ${
+                      menuOpen
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-2 pointer-events-none"
+                    }`}
+                  >
+                    {loading ? (
+                      <>
+                        {[1, 2, 3, 4].map((item) => (
+                          <div key={item} className="px-4 py-2">
+                            <div className="h-4 bg-gray-200 rounded animate-pulse" />
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          to="/contact"
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 font-medium"
+                        >
+                          Contact
+                        </Link>
+                        <Link
+                          to="/about"
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 font-medium"
+                        >
+                          About
+                        </Link>
+                        <Link
+                          to="/features"
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 font-medium"
+                        >
+                          Features
+                        </Link>
+                        <Link
+                          to="/help-center"
+                          className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150 font-medium"
+                        >
+                          Help Center
+                        </Link>
+                      </>
+                    )}
+                  </div>
                 </div>
               </>
             )}
