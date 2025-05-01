@@ -4,7 +4,7 @@ import { Tag } from "./tag";
 import { UserType } from "./user";
 
 export interface Hotel {
-  id: number;
+  id: number | string;
   name: string;
   address: string;
   city: string;

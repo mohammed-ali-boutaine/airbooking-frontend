@@ -76,8 +76,8 @@ export interface Hotel {
   };
   rooms: Room[];
   tags: Tag[];
-  rooms_min_price_per_night: string;
-  reviews_avg_rating: number;
+  rooms_min_price_per_night?: string;
+  reviews_avg_rating?: number;
 }
 
 export interface Room {

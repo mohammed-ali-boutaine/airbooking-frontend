@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Heart, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Hotel } from "../../types";
 import HotelCardSkeleton from "./HotelCardSkeleton";
+import { useWishlistStore } from "../../store/useWishlistStore";
+import { useUserStore } from "../../store/useUserStore";
 
 interface HotelCardProps {
   hotel: Hotel;
@@ -11,9 +13,11 @@ interface HotelCardProps {
 
 const HotelCard: React.FC<HotelCardProps> = ({ hotel, loading = false }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
-  const [isWishlisted, setIsWishlisted] = useState<boolean>(false);
   const [isImageLoaded, setIsImageLoaded] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const { wishlist, toggleWishlist } = useWishlistStore();
+  const { user } = useUserStore();
+  const isWishlisted = wishlist.some((w) => w.id === hotel.id);
 
   // Create images array from hotel data and room images
   const images = [];
@@ -71,10 +75,21 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel, loading = false }) => {
     }
   };
 
-  const toggleWishlist = (e: React.MouseEvent) => {
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
+
+    if (!user) {
+      // Redirect to login if user is not authenticated
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      await toggleWishlist(hotel.id);
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+    }
   };
 
   const handleImageLoad = () => {
@@ -99,7 +114,7 @@ const HotelCard: React.FC<HotelCardProps> = ({ hotel, loading = false }) => {
               ? "bg-red-500 text-white"
               : "hover:bg-red-500 hover:text-white bg-white bg-opacity-55"
           }`}
-          onClick={toggleWishlist}
+          onClick={handleWishlistToggle}
         >
           <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
         </div>

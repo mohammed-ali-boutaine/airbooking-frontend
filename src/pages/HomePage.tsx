@@ -20,10 +20,10 @@ const Homepage: React.FC = () => {
           axiosInstance.get("/tags"),
         ]);
 
-        setHotels(hotelsResponse.data.data.data || []);
+        setHotels(hotelsResponse.data.data || []);
 
-        console.log("Tags response:", tagsResponse.data.data);
-        console.log("Hotels response:", hotelsResponse.data.data.data);
+        console.log("Tags response:", tagsResponse);
+        console.log("Hotels response:", hotelsResponse.data);
         
         
         setTags(tagsResponse.data.data || []);

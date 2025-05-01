@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Hotel } from "../../types";
 import HotelCardSkeleton from "./HotelCardSkeleton";
 import HotelCard from "./HotelCard";
@@ -31,22 +31,51 @@ const HotelGrid: React.FC<HotelGridProps> = ({
   itemsPerPage = 12,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentHotels, setCurrentHotels] = useState<Hotel[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Calculate total pages
-  const totalPages = Math.ceil(hotels.length / itemsPerPage);
+  // Reset to first page when hotels data changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [hotels]);
 
-  // Get current hotels to display
-  const indexOfLastHotel = currentPage * itemsPerPage;
-  const indexOfFirstHotel = indexOfLastHotel - itemsPerPage;
-  const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
+  // Update currentHotels whenever hotels or currentPage changes
+  useEffect(() => {
+    // Calculate total pages
+    const calculatedTotalPages = Math.max(1, Math.ceil(hotels.length / itemsPerPage));
+    setTotalPages(calculatedTotalPages);
+    
+    // Get current hotels to display
+    const indexOfLastHotel = currentPage * itemsPerPage;
+    const indexOfFirstHotel = indexOfLastHotel - itemsPerPage;
+    
+    // Ensure currentPage is never beyond total pages
+    if (currentPage > calculatedTotalPages && calculatedTotalPages > 0) {
+      setCurrentPage(calculatedTotalPages);
+    } else {
+      setCurrentHotels(hotels.slice(indexOfFirstHotel, indexOfLastHotel));
+    }
+  }, [hotels, currentPage, itemsPerPage]);
 
   // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    // Scroll to top when changing pages
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Navigate to previous and next page
-  const goToPrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-  const goToNextPage = () =>
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      paginate(currentPage - 1);
+    }
+  };
+  
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      paginate(currentPage + 1);
+    }
+  };
 
   // Determine grid columns based on screen size
   const getGridColsClasses = () => {
@@ -105,6 +134,7 @@ const HotelGrid: React.FC<HotelGridProps> = ({
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
+            aria-label="Previous page"
           >
             Previous
           </button>
@@ -128,6 +158,8 @@ const HotelGrid: React.FC<HotelGridProps> = ({
                           ? "bg-blue-600 text-white"
                           : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
                       }`}
+                      aria-label={`Go to page ${number}`}
+                      aria-current={currentPage === number ? "page" : undefined}
                     >
                       {number}
                     </button>
@@ -140,8 +172,8 @@ const HotelGrid: React.FC<HotelGridProps> = ({
                   (number === totalPages - 1 && currentPage < totalPages - 2)
                 ) {
                   return (
-                    <span key={number} className="px-2">
-                      ...
+                    <span key={number} className="px-2" aria-hidden="true">
+                      &hellip;
                     </span>
                   );
                 }
@@ -159,6 +191,7 @@ const HotelGrid: React.FC<HotelGridProps> = ({
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
             }`}
+            aria-label="Next page"
           >
             Next
           </button>

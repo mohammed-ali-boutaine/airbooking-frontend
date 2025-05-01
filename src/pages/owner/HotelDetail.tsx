@@ -51,17 +51,19 @@ const HotelDetail: React.FC = () => {
   });
 
   useEffect(() => {
+    if(id) {
     fetchHotel();
-    console.log(hotel);
+    }
+    // console.log(hotel);
   }, [id]);
 
   const fetchHotel = async () => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(`/hotels/${id}`);
-      const hotelData = response.data.data;
-
+      const hotelData = response.data;
       console.log("hotel data:", hotelData);
+
       console.log(hotelData.tags);
 
       // Parse the coordinate string if it comes as a string

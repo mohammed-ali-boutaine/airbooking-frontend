@@ -79,7 +79,9 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
   const fetchHotelName = async () => {
     try {
       const response = await axiosInstance.get(`/hotels/${hotelId}`);
-      setHotelName(response.data.data.name);
+      console.log(response);
+      
+      setHotelName(response.data.name);
     } catch (err) {
       console.error("Error fetching hotel:", err);
       setError("Failed to load hotel details");

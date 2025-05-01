@@ -53,9 +53,9 @@ const HotelForm: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(`/hotels/${id}`);
-      const hotelData = response.data.data;
+      console.log(response);
+      const hotelData = response.data;
 
-      // console.log(response);
 
       // Parse the coordinate string if it comes as a string
       if (hotelData.coordinate && typeof hotelData.coordinate === "string") {
