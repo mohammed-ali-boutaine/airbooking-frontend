@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axiosInstance from "../utils/axios";
-import { RoomType } from "../types";
+// import { RoomType } from "../types";
 import FullScreenGallery from "../components/ImageSlider/FullScreenGallery";
 import ImageSlider from "../components/ImageSlider/ImageSlider";
+import { useRoomStore } from "../store/useRoomStore";
 
 const RoomDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [room, setRoom] = useState<RoomType | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { room, loading, error, fetchRoomDetail } = useRoomStore();
   const [activeImage, setActiveImage] = useState<number>(0);
   const [galleryOpen, setGalleryOpen] = useState<boolean>(false);
   const [bookingDates, setBookingDates] = useState({
@@ -30,27 +28,16 @@ const RoomDetailPage: React.FC = () => {
   }, [bookingDates]);
 
   useEffect(() => {
-    const fetchRoomDetail = async () => {
-      try {
-        setLoading(true);
-        const roomResponse = await axiosInstance.get(`/rooms/${id}`);
-        console.log(roomResponse);
-
-        setRoom(roomResponse.data.data);
-
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching room details:", err);
-        setError("Failed to load room details. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (id) {
-      fetchRoomDetail();
+      fetchRoomDetail(id);
     }
-  }, [id]);
+  }, [id, fetchRoomDetail]);
+
+  useEffect(() => {
+    if (room?.capacity && guestCount > room.capacity) {
+      setGuestCount(1);
+    }
+  }, [room, guestCount]);
 
   const handleBooking = () => {
     console.log("Booking room:", room);
@@ -293,7 +280,8 @@ const RoomDetailPage: React.FC = () => {
                       />
                     </svg>
                     <div>
-                      <span className="font-medium">Check-in:</span> After 3:00 PM
+                      <span className="font-medium">Check-in:</span> After 3:00
+                      PM
                     </div>
                   </li>
                   <li className="flex items-start">
@@ -310,7 +298,8 @@ const RoomDetailPage: React.FC = () => {
                       />
                     </svg>
                     <div>
-                      <span className="font-medium">Check-out:</span> Before 11:00 AM
+                      <span className="font-medium">Check-out:</span> Before
+                      11:00 AM
                     </div>
                   </li>
                 </ul>
@@ -360,19 +349,42 @@ const RoomDetailPage: React.FC = () => {
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">Cancellation policy</h2>
             <p className="text-gray-700 mb-4">
-              Free cancellation for 48 hours. After that, cancel before 3:00 PM on
-              the day of check-in and get a full refund, minus the service fee.
+              Free cancellation for 48 hours. After that, cancel before 3:00 PM
+              on the day of check-in and get a full refund, minus the service
+              fee.
             </p>
             <ul className="mt-4 space-y-2 text-gray-700">
               <li className="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-green-500 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span>Free cancellation for 48 hours</span>
               </li>
               <li className="flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-green-500 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <span>Full refund before 3:00 PM on check-in day</span>
               </li>
