@@ -47,20 +47,6 @@ const HotelDetailPage: React.FC = () => {
     }
   }, [id]);
 
-  // Helper to count total images (used only for thumbnail "+X more" badge)
-//   const getTotalImageCount = (hotelObj: Hotel | null) => {
-//     if (!hotelObj) return 0;
-//     let count = 0;
-//     if (hotelObj.cover_path) count++;
-//     if (hotelObj.profile_path) count++;
-//     hotelObj.rooms?.forEach((room) => {
-//       if (room.images) {
-//         count += room.images.length;
-//       }
-//     });
-//     return count;
-//   };
-
   // Helper to get all image URLs for the hotel
   const getAllImageUrls = (hotelObj: Hotel | null) => {
     if (!hotelObj) return [];

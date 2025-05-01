@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axiosInstance from "../utils/axios";
-import {  HotelType, RoomType } from "../types";
-
+import { RoomType } from "../types";
+import FullScreenGallery from "../components/ImageSlider/FullScreenGallery";
+import ImageSlider from "../components/ImageSlider/ImageSlider";
 
 const RoomDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [room, setRoom] = useState<RoomType | null>(null);
-  const [hotel, setHotel] = useState<HotelType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState<number>(0);
+  const [galleryOpen, setGalleryOpen] = useState<boolean>(false);
   const [bookingDates, setBookingDates] = useState({
     checkIn: "",
     checkOut: "",
@@ -18,7 +19,6 @@ const RoomDetailPage: React.FC = () => {
   const [guestCount, setGuestCount] = useState<number>(1);
   const [totalNights, setTotalNights] = useState<number>(1);
 
-  // Calculate total nights when dates change
   useEffect(() => {
     if (bookingDates.checkIn && bookingDates.checkOut) {
       const start = new Date(bookingDates.checkIn);
@@ -34,15 +34,9 @@ const RoomDetailPage: React.FC = () => {
       try {
         setLoading(true);
         const roomResponse = await axiosInstance.get(`/rooms/${id}`);
-        setRoom(roomResponse.data);
+        console.log(roomResponse);
 
-        // Fetch hotel details based on the room's hotel_id
-        if (roomResponse.data.hotel_id) {
-          const hotelResponse = await axiosInstance.get(
-            `/hotels/${roomResponse.data.hotel_id}`
-          );
-          setHotel(hotelResponse.data);
-        }
+        setRoom(roomResponse.data.data);
 
         setError(null);
       } catch (err) {
@@ -59,13 +53,21 @@ const RoomDetailPage: React.FC = () => {
   }, [id]);
 
   const handleBooking = () => {
-    // Implement booking logic here
     console.log("Booking room:", room);
     console.log("Dates:", bookingDates);
     console.log("Guests:", guestCount);
 
-    // This would typically make an API call to create a booking
     alert("Booking functionality would be implemented here!");
+  };
+
+  const getRoomImageUrls = () => {
+    if (!room || !room.images || room.images.length === 0) {
+      return ["/placeholder-room.png"];
+    }
+
+    return room.images.map(
+      (image) => `http://127.0.0.1:8000/storage/${image.image_path}`
+    );
   };
 
   if (loading) {
@@ -118,7 +120,6 @@ const RoomDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb Navigation */}
       <nav className="flex items-center text-sm text-gray-500 mb-6">
         <Link to="/" className="hover:text-gray-700">
           Home
@@ -130,10 +131,13 @@ const RoomDetailPage: React.FC = () => {
             clipRule="evenodd"
           />
         </svg>
-        {hotel && (
+        {room.hotel && (
           <>
-            <Link to={`/hotels/${hotel.id}`} className="hover:text-gray-700">
-              {hotel.name}
+            <Link
+              to={`/hotels/${room.hotel.id}`}
+              className="hover:text-gray-700"
+            >
+              {room.hotel.name}
             </Link>
             <svg
               className="h-4 w-4 mx-2"
@@ -151,7 +155,6 @@ const RoomDetailPage: React.FC = () => {
         <span className="text-gray-700">{room.name}</span>
       </nav>
 
-      {/* Room Name & Type Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">{room.name}</h1>
         <div className="flex items-center mt-1">
@@ -174,21 +177,17 @@ const RoomDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Image Gallery */}
       <div className="mb-8">
         <div className="relative">
-          {/* Main Image */}
           <div className="rounded-xl overflow-hidden h-96 bg-gray-100">
             {room.images && room.images.length > 0 ? (
-              <img
-                src={`http://127.0.0.1:8000/storage/${room.images[activeImage]?.image_path}`}
-                alt={room.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-room.png";
-                }}
-              />
+              <div className="w-full h-full flex items-center justify-center">
+                <ImageSlider
+                  images={getRoomImageUrls()}
+                  onImageClick={() => setGalleryOpen(true)}
+                  className="w-full h-full object-contain cursor-pointer"
+                />
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-gray-200">
                 <svg
@@ -207,72 +206,18 @@ const RoomDetailPage: React.FC = () => {
                 </svg>
               </div>
             )}
-
-            {/* Navigation Arrows */}
-            {room.images && room.images.length > 1 && (
-              <>
-                <button
-                  onClick={() =>
-                    setActiveImage((prev) =>
-                      prev === 0 ? room.images.length - 1 : prev - 1
-                    )
-                  }
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={() =>
-                    setActiveImage((prev) =>
-                      prev === room.images.length - 1 ? 0 : prev + 1
-                    )
-                  }
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-              </>
-            )}
           </div>
 
-          {/* Thumbnail Images */}
           {room.images && room.images.length > 1 && (
             <div className="flex space-x-2 mt-4 overflow-x-auto pb-2">
               {room.images.map((image, index) => (
                 <button
                   key={image.id}
-                  onClick={() => setActiveImage(index)}
-                  className={`w-24 h-16 flex-shrink-0 rounded-md overflow-hidden ${
-                    index === activeImage
-                      ? "ring-2 ring-blue-500"
-                      : "opacity-70"
-                  }`}
+                  onClick={() => {
+                    setActiveImage(index);
+                    setGalleryOpen(true);
+                  }}
+                  className="w-24 h-16 flex-shrink-0 rounded-md overflow-hidden hover:opacity-90 transition-opacity"
                 >
                   <img
                     src={`http://127.0.0.1:8000/storage/${image.image_path}`}
@@ -290,10 +235,8 @@ const RoomDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Room Content */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         <div className="md:col-span-2">
-          {/* Room Description */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-4">About this room</h2>
             <p className="text-gray-700 whitespace-pre-line">
@@ -330,7 +273,180 @@ const RoomDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Room Amenities */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">House rules</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-medium mb-3">Check-in & Check-out</h3>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <span className="font-medium">Check-in:</span> After 3:00 PM
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <span className="font-medium">Check-out:</span> Before 11:00 AM
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium mb-3">Policies</h3>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <span className="font-medium">No smoking</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-500 mr-2"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <div>
+                      <span className="font-medium">No parties or events</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">Cancellation policy</h2>
+            <p className="text-gray-700 mb-4">
+              Free cancellation for 48 hours. After that, cancel before 3:00 PM on
+              the day of check-in and get a full refund, minus the service fee.
+            </p>
+            <ul className="mt-4 space-y-2 text-gray-700">
+              <li className="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Free cancellation for 48 hours</span>
+              </li>
+              <li className="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>Full refund before 3:00 PM on check-in day</span>
+              </li>
+            </ul>
+          </div>
+
+          {room.hotel && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">About the place</h2>
+              <div className="flex items-center mb-4">
+                <div className="mr-4">
+                  <img
+                    src={`http://127.0.0.1:8000/storage/${room.hotel.profile_path}`}
+                    alt={room.hotel.name}
+                    className="w-16 h-16 rounded-lg object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/placeholder-hotel.png";
+                    }}
+                  />
+                </div>
+                <div>
+                  <h3 className="font-medium text-lg">{room.hotel.name}</h3>
+                  <p className="text-gray-600">
+                    {room.hotel.city}, {room.hotel.country}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-gray-700 whitespace-pre-line mb-4">
+                {room.hotel.description}
+              </p>
+
+              {room.hotel.tags && room.hotel.tags.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-base font-medium mb-2">Hotel features</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {room.hotel.tags.map((tag) => (
+                      <span
+                        key={tag.id}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700"
+                      >
+                        {tag.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-4">
+                <Link
+                  to={`/hotels/${room.hotel.id}`}
+                  className="text-blue-600 hover:underline flex items-center"
+                >
+                  <span>View more about this hotel</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          )}
+
           {room.amenities && room.amenities.length > 0 && (
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">
@@ -360,55 +476,81 @@ const RoomDetailPage: React.FC = () => {
             </div>
           )}
 
-          {/* Hotel Information */}
-          {hotel && (
+          {room.hotel && (
             <div className="border-t pt-8">
-              <h2 className="text-2xl font-semibold mb-4">About the hotel</h2>
-              <div className="flex items-center mb-4">
-                <div className="mr-4">
-                  <img
-                    src={`http://127.0.0.1:8000/storage/${hotel.profile_path}`}
-                    alt={hotel.name}
-                    className="w-16 h-16 rounded-lg object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/placeholder-hotel.png";
-                    }}
-                  />
-                </div>
+              <h2 className="text-2xl font-semibold mb-4">
+                Location & Contact
+              </h2>
+              <div className="mb-4">
+                <h3 className="font-medium mb-2">Address</h3>
+                <p className="text-gray-700">{room.hotel.address}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                  <h3 className="font-medium text-lg">{hotel.name}</h3>
-                  <p className="text-gray-600">
-                    {hotel.city}, {hotel.country}
+                  <h3 className="font-medium mb-2">Contact</h3>
+                  <div className="space-y-1">
+                    <p className="text-gray-700 flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-2 text-gray-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                      {room.hotel.phone}
+                    </p>
+                    <p className="text-gray-700 flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-2 text-gray-500"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                      </svg>
+                      {room.hotel.email}
+                    </p>
+                    {room.hotel.website && (
+                      <p className="text-gray-700 flex items-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 mr-2 text-gray-500"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <a
+                          href={room.hotel.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {room.hotel.website.replace(/^https?:\/\//, "")}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">City</h3>
+                  <p className="text-gray-700">
+                    {room.hotel.city}, {room.hotel.country}
                   </p>
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">{hotel.address}</p>
-              <Link
-                to={`/hotels/${hotel.id}`}
-                className="text-blue-600 hover:underline flex items-center"
-              >
-                <span>View more about this hotel</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 ml-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </Link>
             </div>
           )}
         </div>
 
-        {/* Booking Section */}
         <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 h-fit sticky top-8">
           <div className="mb-4">
             <div className="flex items-center">
@@ -508,9 +650,6 @@ const RoomDetailPage: React.FC = () => {
                   ${room.price_per_night} x {totalNights}{" "}
                   {totalNights === 1 ? "night" : "nights"}
                 </span>
-                {/* <span>
-                  ${(parseFloat(room.price_per_night) * totalNights).toFixed(2)}
-                </span> */}
               </div>
               <div className="flex justify-between mb-2">
                 <span className="text-gray-600">Cleaning fee</span>
@@ -522,117 +661,19 @@ const RoomDetailPage: React.FC = () => {
               </div>
               <div className="flex justify-between font-semibold border-t pt-4 mt-4">
                 <span>Total before taxes</span>
-                {/* <span>
-                  $
-                  {(
-                    parseFloat(room.price_per_night) * totalNights +
-                    40 +
-                    35
-                  ).toFixed(2)}
-                </span> */}
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* House Rules Section */}
-      <div className="border-t pt-8 mb-12">
-        <h2 className="text-2xl font-semibold mb-6">House rules</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="font-medium mb-4">Check-in & Check-out</h3>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-500 mr-2 mt-0.5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div>
-                  <span className="font-medium">Check-in:</span> After 3:00 PM
-                </div>
-              </li>
-              <li className="flex items-start">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-500 mr-2 mt-0.5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div>
-                  <span className="font-medium">Check-out:</span> Before 11:00
-                  AM
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-medium mb-4">Policies</h3>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-500 mr-2 mt-0.5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div>
-                  <span className="font-medium">No smoking</span>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-500 mr-2 mt-0.5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <div>
-                  <span className="font-medium">No parties or events</span>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Cancellation Policy */}
-      <div className="border-t pt-8 pb-12">
-        <h2 className="text-2xl font-semibold mb-4">Cancellation policy</h2>
-        <p className="text-gray-700 mb-4">
-          Free cancellation for 48 hours. After that, cancel before 3:00 PM on
-          the day of check-in and get a full refund, minus the service fee.
-        </p>
-        <button className="text-blue-600 underline hover:text-blue-800">
-          Learn more about cancellation policies
-        </button>
-      </div>
+      {galleryOpen && (
+        <FullScreenGallery
+          images={getRoomImageUrls()}
+          initialIndex={activeImage}
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
     </div>
   );
 };
