@@ -21,22 +21,32 @@ const RegisterPage = () => {
     profile_path: null,
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const setUser = useUserStore((state) => state.setUser);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "profile_path"
-          ? files && files[0]
-            ? files[0]
-            : null
-          : value,
-    }));
+
+    if (name === "profile_path" && files && files[0]) {
+      const file = files[0];
+      setFormData((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+
+      // Create preview URL for the selected image
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result as string);
+      };
+      fileReader.readAsDataURL(file);
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +89,85 @@ const RegisterPage = () => {
         Create an Account
       </h2>
       <form onSubmit={handleSubmit}>
+        {/* Moved profile image upload to the top */}
+        <div className="mb-6 flex flex-col items-center">
+          <label
+            htmlFor="profile_path"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Profile Image
+          </label>
+          <div className="flex items-center justify-center">
+            <div className="relative w-32 h-32 group">
+              <div
+                className={`w-full h-full rounded-full flex items-center justify-center overflow-hidden border-2 ${
+                  previewUrl
+                    ? "border-[var(--primary-color)]"
+                    : "border-dashed border-gray-300"
+                } hover:border-[var(--primary-color)] transition-colors bg-gray-50`}
+              >
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Profile preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-12 w-12 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                )}
+
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+
+                <input
+                  id="profile_path"
+                  name="profile_path"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+              </div>
+            </div>
+          </div>
+          <p className="mt-2 text-sm text-center text-gray-500">
+            Click to upload your profile picture
+          </p>
+        </div>
+
         <Input
           name="name"
           type="text"
@@ -106,24 +195,6 @@ const RegisterPage = () => {
           onChange={handleChange}
           required
         />
-
-        {/* New file upload field */}
-        <div className="mb-4">
-          <label
-            htmlFor="profile_path"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Profile Image
-          </label>
-          <input
-            id="profile_path"
-            name="profile_path"
-            type="file"
-            accept="image/*"
-            onChange={handleChange}
-            className="block w-full text-sm text-gray-900 border border-gray-300 rounded cursor-pointer bg-gray-50"
-          />
-        </div>
 
         <div className="mt-6">
           <Button disabled={loading} variant="primary" fullWidth type="submit">

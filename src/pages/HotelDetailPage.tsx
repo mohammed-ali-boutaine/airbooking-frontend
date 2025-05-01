@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Hotel } from "../types";
 import axiosInstance from "../utils/axios";
 import HotelMap from "../components/map/HotelMap";
 import ImageSlider from "../components/ImageSlider/ImageSlider";
 import FullScreenGallery from "../components/ImageSlider/FullScreenGallery";
+import Button from "../components/static/Button";
 
 const HotelDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -423,9 +424,12 @@ const HotelDetailPage: React.FC = () => {
             </div>
           </div>
 
-          <button className="w-full bg-rose-600 text-white rounded-lg py-3 font-medium hover:bg-rose-700 transition-colors">
+          {/* <button className="w-full bg-rose-600 text-white rounded-lg py-3 font-medium hover:bg-rose-700 transition-colors">
             Reserve
-          </button>
+          </button> */}
+          <Button fullWidth={true} >
+            Book
+          </Button>
 
           <div className="mt-4 text-center text-gray-500 text-sm">
             You won't be charged yet
@@ -646,26 +650,12 @@ const HotelDetailPage: React.FC = () => {
                       </span>
                       <span className="text-gray-600 text-sm">/night</span>
                     </div>
-                    <Link
-                      to={`/rooms/${room.id}`}
-                      className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
-                    >
-                      <span>View Details</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4 ml-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </Link>
+
+                    <Button to={`/rooms/${room.id}`} >
+                    <span>View Details</span>
+
+                    </Button>
+                
                   </div>
                 </div>
               </div>

@@ -4,6 +4,7 @@ import Button from "../components/static/Button";
 import { redirectToProvider } from "../utils/redirect";
 import GoogleIcon from "../components/icons/GoogleIcon";
 import FacebookIcon from "../components/icons/FacebookIcon";
+import Footer from "../components/Footer/Footer";
 
 
 
@@ -61,6 +62,8 @@ const AuthLayout = () => {
           </p>
         </div>
       </div>
+
+      <Footer/>
     </>
   );
 };

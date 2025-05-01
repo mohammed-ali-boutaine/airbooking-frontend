@@ -42,13 +42,16 @@ const HotelGrid: React.FC<HotelGridProps> = ({
   // Update currentHotels whenever hotels or currentPage changes
   useEffect(() => {
     // Calculate total pages
-    const calculatedTotalPages = Math.max(1, Math.ceil(hotels.length / itemsPerPage));
+    const calculatedTotalPages = Math.max(
+      1,
+      Math.ceil(hotels.length / itemsPerPage)
+    );
     setTotalPages(calculatedTotalPages);
-    
+
     // Get current hotels to display
     const indexOfLastHotel = currentPage * itemsPerPage;
     const indexOfFirstHotel = indexOfLastHotel - itemsPerPage;
-    
+
     // Ensure currentPage is never beyond total pages
     if (currentPage > calculatedTotalPages && calculatedTotalPages > 0) {
       setCurrentPage(calculatedTotalPages);
@@ -61,7 +64,7 @@ const HotelGrid: React.FC<HotelGridProps> = ({
   const paginate = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     // Scroll to top when changing pages
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Navigate to previous and next page
@@ -70,7 +73,7 @@ const HotelGrid: React.FC<HotelGridProps> = ({
       paginate(currentPage - 1);
     }
   };
-  
+
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       paginate(currentPage + 1);
@@ -132,7 +135,7 @@ const HotelGrid: React.FC<HotelGridProps> = ({
             className={`px-3 py-1 rounded-md ${
               currentPage === 1
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                : "bg-white border-1 border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
             }`}
             aria-label="Previous page"
           >
@@ -155,8 +158,8 @@ const HotelGrid: React.FC<HotelGridProps> = ({
                       onClick={() => paginate(number)}
                       className={`w-8 h-8 rounded-md ${
                         currentPage === number
-                          ? "bg-blue-600 text-white"
-                          : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                          ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)]"
+                          : "bg-white border-1 border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
                       }`}
                       aria-label={`Go to page ${number}`}
                       aria-current={currentPage === number ? "page" : undefined}
@@ -189,7 +192,7 @@ const HotelGrid: React.FC<HotelGridProps> = ({
             className={`px-3 py-1 rounded-md ${
               currentPage === totalPages
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+                : "bg-white border-1 border-[var(--primary-color)] text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
             }`}
             aria-label="Next page"
           >

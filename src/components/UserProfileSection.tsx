@@ -328,14 +328,14 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
               <img
                 src={getProfileImageUrl()}
                 alt={userData?.name || "User profile"}
-                className="w-24 h-24 rounded-full object-cover border-2 border-indigo-500"
+                className="w-24 h-24 rounded-full object-cover border-2 text-[var(--primary-color)] "
                 onError={(e) => {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = "/placeholder-profile.png"; // Fallback image
                 }}
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-600 border-2 border-indigo-500">
+              <div className="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center text-3xl font-bold text-[var(--primary-color)]  border-2 border-[var(--primary-color)] ">
                 {getUserInitial()}
               </div>
             )}
@@ -594,7 +594,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
           </div>
           <button
             onClick={submitPasswordChange}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="w-full px-4 py-2 bg-[var(--primary-color)]  text-white rounded-md hover:bg-[var(--primary-color-hover)] "
           >
             Change Password
           </button>

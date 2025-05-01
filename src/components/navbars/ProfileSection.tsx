@@ -150,7 +150,7 @@ const ProfileSection: React.FC<ProfileHeaderProps> = ({ user }) => {
             className="w-10 h-10 rounded-full object-cover border border-gray-200"
           />
         ) : (
-          <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-medium">
+          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center  font-medium text-[var(--primary-color)]  border-2 border-[var(--primary-color)]">
             {getInitial(user?.name)}
           </div>
         )}
