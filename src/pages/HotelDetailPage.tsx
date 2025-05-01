@@ -4,12 +4,15 @@ import { Hotel } from "../types";
 import axiosInstance from "../utils/axios";
 import HotelMap from "../components/map/HotelMap";
 import ImageSlider from "../components/ImageSlider/ImageSlider";
+import FullScreenGallery from "../components/ImageSlider/FullScreenGallery";
 
 const HotelDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [galleryOpen, setGalleryOpen] = useState<boolean>(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
 
   useEffect(() => {
     const fetchHotelDetail = async () => {
@@ -43,6 +46,54 @@ const HotelDetailPage: React.FC = () => {
       fetchHotelDetail();
     }
   }, [id]);
+
+  // Helper to count total images (used only for thumbnail "+X more" badge)
+//   const getTotalImageCount = (hotelObj: Hotel | null) => {
+//     if (!hotelObj) return 0;
+//     let count = 0;
+//     if (hotelObj.cover_path) count++;
+//     if (hotelObj.profile_path) count++;
+//     hotelObj.rooms?.forEach((room) => {
+//       if (room.images) {
+//         count += room.images.length;
+//       }
+//     });
+//     return count;
+//   };
+
+  // Helper to get all image URLs for the hotel
+  const getAllImageUrls = (hotelObj: Hotel | null) => {
+    if (!hotelObj) return [];
+
+    const imageUrls: string[] = [];
+
+    // Add cover image if it exists
+    if (hotelObj.cover_path) {
+      imageUrls.push(`http://127.0.0.1:8000/storage/${hotelObj.cover_path}`);
+    }
+
+    // Add profile image if it exists
+    if (hotelObj.profile_path) {
+      imageUrls.push(`http://127.0.0.1:8000/storage/${hotelObj.profile_path}`);
+    }
+
+    // Add room images if they exist
+    hotelObj.rooms?.forEach((room) => {
+      if (room.images && room.images.length > 0) {
+        room.images.forEach((image) => {
+          imageUrls.push(`http://127.0.0.1:8000/storage/${image.image_path}`);
+        });
+      }
+    });
+
+    return imageUrls;
+  };
+
+  // Handle opening the fullscreen gallery with a specific image
+  const openGallery = (index: number) => {
+    setSelectedImageIndex(index);
+    setGalleryOpen(true);
+  };
 
   if (loading) {
     return (
@@ -145,40 +196,114 @@ const HotelDetailPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-3">
             <div className="rounded-lg overflow-hidden h-96 bg-gray-100">
-              <ImageSlider
-                images={[
-                  hotel.cover_path
-                    ? `http://127.0.0.1:8000/storage/${hotel.cover_path}`
-                    : "/placeholder-hotel.png",
-                ]}
-                onImageClick={() => {}}
-              />
+              <div className="w-full h-full flex items-center justify-center">
+                <ImageSlider
+                  images={getAllImageUrls(hotel)}
+                  onImageClick={(index) => openGallery(index)}
+                  className="w-full h-full object-contain cursor-pointer"
+                />
+              </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-lg overflow-hidden h-44 bg-gray-100">
-              <ImageSlider
-                images={[
-                  hotel.profile_path
-                    ? `http://127.0.0.1:8000/storage/${hotel.profile_path}`
-                    : "/placeholder-hotel.png",
-                ]}
-                onImageClick={() => {}}
-              />
-            </div>
-            {hotel.rooms &&
-              hotel.rooms[0]?.images &&
-              hotel.rooms[0].images[0] && (
-                <div className="rounded-lg overflow-hidden h-44 bg-gray-100">
-                  <ImageSlider
-                    images={[
-                      `http://127.0.0.1:8000/storage/${hotel.rooms[0].images[0].image_path}`,
-                    ]}
-                    onImageClick={() => {}}
-                  />
+            {/* Show thumbnails of available images */}
+            <div className="grid grid-cols-2 gap-2">
+              {/* Show first 4 thumbnails or less if there aren't enough images */}
+              {getAllImageUrls(hotel)
+                .slice(0, 4)
+                .map((imgUrl, index) => (
+                  <div
+                    key={index}
+                    className="rounded-lg overflow-hidden h-20 bg-gray-100 cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => openGallery(index)}
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Hotel image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder-hotel.png";
+                      }}
+                    />
+                  </div>
+                ))}
+
+              {/* Show "more images" thumbnail if there are more than 4 images */}
+              {getAllImageUrls(hotel).length > 4 && (
+                <div
+                  className="rounded-lg overflow-hidden h-20 bg-gray-100 relative cursor-pointer"
+                  onClick={() => openGallery(4)}
+                >
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-white">
+                    <span>+{getAllImageUrls(hotel).length - 4} more</span>
+                  </div>
+                  {getAllImageUrls(hotel)[4] && (
+                    <img
+                      src={getAllImageUrls(hotel)[4]}
+                      alt={`Hotel image 5`}
+                      className="w-full h-full object-cover opacity-70"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder-hotel.png";
+                      }}
+                    />
+                  )}
                 </div>
               )}
+            </div>
+
+            {/* Hotel Quick Info Section */}
+            <div className="bg-white p-4 rounded-lg shadow border border-gray-100">
+              <h3 className="font-medium text-lg mb-2">Quick Info</h3>
+              <div className="space-y-2">
+                <div className="flex items-center text-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-500 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    />
+                  </svg>
+                  <span className="text-gray-700">
+                    {hotel.rooms?.length || 0} Rooms Available
+                  </span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-gray-500 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <span className="text-gray-700">
+                    {hotel.city}, {hotel.country}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -386,13 +511,33 @@ const HotelDetailPage: React.FC = () => {
                   <div className="relative h-64 overflow-hidden bg-gray-100">
                     {room.images && room.images.length > 0 ? (
                       <>
-                        <div className="h-full overflow-hidden">
+                        <div className="h-full overflow-hidden flex items-center justify-center">
                           <ImageSlider
                             images={room.images.map(
                               (image) =>
                                 `http://127.0.0.1:8000/storage/${image.image_path}`
                             )}
-                            onImageClick={() => {}}
+                            onImageClick={(index) => {
+                              // Calculate the index in the full gallery
+                              const hotelImagesCount =
+                                (hotel.cover_path ? 1 : 0) +
+                                (hotel.profile_path ? 1 : 0);
+
+                              // Find the starting index for this room's images
+                              let startIndex = hotelImagesCount;
+                              for (
+                                let i = 0;
+                                i < hotel.rooms.indexOf(room);
+                                i++
+                              ) {
+                                if (hotel.rooms[i].images) {
+                                  startIndex += hotel.rooms[i].images.length;
+                                }
+                              }
+
+                              openGallery(startIndex + index);
+                            }}
+                            className="w-full h-full object-cover cursor-pointer"
                           />
                         </div>
                         {/* Image counter badge */}
@@ -615,6 +760,15 @@ const HotelDetailPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Gallery */}
+      {galleryOpen && (
+        <FullScreenGallery
+          images={getAllImageUrls(hotel)}
+          initialIndex={selectedImageIndex}
+          onClose={() => setGalleryOpen(false)}
+        />
+      )}
     </div>
   );
 };

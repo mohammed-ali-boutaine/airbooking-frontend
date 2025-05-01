@@ -1,201 +1,134 @@
-import React, { useState, useRef, useEffect } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ImageSliderProps {
   images: string[];
-  onImageClick?: () => void;
+  onImageClick?: (index: number) => void;
+  className?: string;
 }
 
-const PrevArrow = (props: any) => {
-  const { onClick } = props;
-  return (
-    <button
-      onClick={onClick}
-      className="absolute left-4 top-1/2 z-10 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all"
-    >
-      <ChevronLeft className="w-6 h-6 text-gray-800" />
-    </button>
-  );
-};
+const ImageSlider: React.FC<ImageSliderProps> = ({
+  images,
+  onImageClick = () => {},
+  className = "",
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageFailed, setImageFailed] = useState(false);
 
-const NextArrow = (props: any) => {
-  const { onClick } = props;
-  return (
-    <button
-      onClick={onClick}
-      className="absolute right-4 top-1/2 z-10 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition-all"
-    >
-      <ChevronRight className="w-6 h-6 text-gray-800" />
-    </button>
-  );
-};
-
-const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => {
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const galleryRef = useRef<HTMLDivElement>(null);
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    beforeChange: (_: any, next: number) => setCurrentImageIndex(next),
-  };
-
-  const openGallery = (index: number) => {
-    setCurrentImageIndex(index);
-    setIsGalleryOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeGallery = () => {
-    setIsGalleryOpen(false);
-    document.body.style.overflow = "unset";
-  };
-
-  const handleImageClick = (image: string, index: number) => {
-    setSelectedImage(image);
-    openGallery(index);
-  };
-
+  // Reset slider when images change
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        galleryRef.current &&
-        !galleryRef.current.contains(event.target as Node)
-      ) {
-        closeGallery();
-      }
-    };
+    setCurrentIndex(0);
+  }, [images]);
 
-    if (isGalleryOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setIsLoading(true);
+  };
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isGalleryOpen]);
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
+    setIsLoading(true);
+  };
 
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeGallery();
-      }
-    };
+  const handleImageClick = () => {
+    onImageClick(currentIndex);
+  };
 
-    if (isGalleryOpen) {
-      document.addEventListener("keydown", handleEscape);
-    }
+  const handleImageLoad = () => {
+    setIsLoading(false);
+    setImageFailed(false);
+  };
 
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, [isGalleryOpen]);
+  const handleImageError = () => {
+    setIsLoading(false);
+    setImageFailed(true);
+  };
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="flex items-center justify-center w-full h-full bg-gray-100 text-gray-400">
+        No images available
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div className="relative">
-        <Slider {...settings}>
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="relative aspect-[16/9] cursor-pointer group"
-              onClick={() => handleImageClick(image, index)}
+    <div className="relative w-full h-full">
+      {/* Main Image */}
+      <div
+        className="w-full h-full flex items-center justify-center overflow-hidden"
+        onClick={handleImageClick}
+      >
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-400"></div>
+          </div>
+        )}
+
+        <img
+          src={images[currentIndex]}
+          alt={`Image ${currentIndex + 1}`}
+          className={`transition-opacity duration-300 ${className} ${
+            isLoading ? "opacity-0" : "opacity-100"
+          }`}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+
+        {imageFailed && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 text-gray-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-12 w-12 mb-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <img
-                src={image}
-                alt={`Slide ${index + 1}`}
-                className="w-full h-full object-cover"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
-              {/* Overlay with expand button */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <button
-                  className="bg-white/90 p-2 rounded-full shadow-lg hover:bg-white transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImageClick(image, index);
-                  }}
-                >
-                  <Maximize2 className="w-6 h-6 text-gray-800" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </Slider>
-
-        {/* Selected Image Preview Button */}
-        {selectedImage && (
-          <button
-            onClick={() => openGallery(currentImageIndex)}
-            className="absolute bottom-4 right-4 bg-white/90 p-2 rounded-full shadow-lg hover:bg-white transition-all z-10"
-          >
-            <img
-              src={selectedImage}
-              alt="Selected preview"
-              className="w-12 h-12 rounded-full object-cover"
-            />
-          </button>
+            </svg>
+            <p>Image failed to load</p>
+          </div>
         )}
       </div>
 
-      {/* Gallery Popup */}
-      {isGalleryOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
-          <div
-            ref={galleryRef}
-            className="relative w-full max-w-7xl mx-auto px-4"
+      {/* Navigation arrows (only show if more than one image) */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 rounded-full p-1 shadow focus:outline-none transition-all hover:scale-110"
+            aria-label="Previous image"
           >
-            {/* Close button */}
-            <button
-              onClick={closeGallery}
-              className="absolute -right-4 -top-4 z-50 bg-white/80 p-2 rounded-full hover:bg-white transition-all shadow-lg"
-              aria-label="Close gallery"
-            >
-              <X className="w-6 h-6 text-gray-800" />
-            </button>
+            <ChevronLeft className="h-6 w-6 text-gray-700" />
+          </button>
 
-            {/* Main image */}
-            <div className="relative aspect-[16/9] mb-4">
-              <img
-                src={images[currentImageIndex]}
-                alt={`Gallery image ${currentImageIndex + 1}`}
-                className="w-full h-full object-contain"
-              />
-            </div>
+          <button
+            onClick={handleNext}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 rounded-full p-1 shadow focus:outline-none transition-all hover:scale-110"
+            aria-label="Next image"
+          >
+            <ChevronRight className="h-6 w-6 text-gray-700" />
+          </button>
 
-            {/* Thumbnails */}
-            <div className="grid grid-cols-6 gap-2 mt-4">
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`aspect-square cursor-pointer ${
-                    currentImageIndex === index ? "ring-2 ring-blue-500" : ""
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                >
-                  <img
-                    src={image}
-                    alt={`Thumbnail ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+          {/* Image counter */}
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
+            <span>
+              {currentIndex + 1} / {images.length}
+            </span>
           </div>
-        </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 
