@@ -28,6 +28,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
     newPassword: "",
     confirmPassword: "",
   });
+  console.log(userData);
 
   // State for feedback messages
   const [feedback, setFeedback] = useState<{
@@ -87,15 +88,29 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
   // Save changes for a specific field
   const saveField = async (field: "name" | "email" | "phone" | "address") => {
     try {
+      const updateData: Partial<UserType> = {};
+
+      // Create a proper data object based on the field being updated
       if (field === "address") {
-        await onSave({ address: formData.address });
+        updateData.address = formData.address || undefined;
+      } else if (field === "phone") {
+        updateData.phone = formData.phone || undefined;
       } else {
-        await onSave({ [field]: formData[field as keyof UserType] });
+        updateData[field] = formData[field as keyof UserType];
       }
+
+      // Log the data being sent
+      console.log("Sending update for field:", field, updateData);
+
+      // Send the update request
+      await onSave(updateData);
+
+      // Update UI state
       setIsEditing((prev) => ({
         ...prev,
         [field]: false,
       }));
+
       setFeedback({
         type: "success",
         message: `Your ${field} has been updated successfully!`,
@@ -106,11 +121,21 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
         setFeedback({ type: "", message: "" });
       }, 3000);
     } catch (error: any) {
-      console.log(error);
+      console.error("Update error:", error);
+
+      // Extract error message from response if available
+      let errorMsg = `Failed to update ${field}. Please try again.`;
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response?.data?.errors) {
+        // Laravel validation errors
+        const firstErrorField = Object.keys(error.response.data.errors)[0];
+        errorMsg = error.response.data.errors[firstErrorField][0];
+      }
 
       setFeedback({
         type: "error",
-        message: `Failed to update ${field}. Please try again.`,
+        message: errorMsg,
       });
     }
   };
@@ -199,6 +224,9 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
         const formData = new FormData();
         formData.append("profile_path", file);
 
+        // Log the form data being sent
+        console.log("Sending profile image update");
+
         // Send the file directly to the parent component's onSave function
         await onSave({ profile_path: file });
 
@@ -219,12 +247,17 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
           setFeedback({ type: "", message: "" });
         }, 3000);
       } catch (error: any) {
-        console.log(error);
+        console.error("Image upload error:", error);
 
         // Extract error message from backend if available
-        const errorMessage =
-          error.response?.data?.message ||
+        let errorMessage =
           "Failed to update profile picture. Please try again.";
+
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.response?.data?.errors?.profile_path) {
+          errorMessage = error.response.data.errors.profile_path[0];
+        }
 
         setFeedback({
           type: "error",
@@ -270,12 +303,12 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
   // Determine profile image URL
   const getProfileImageUrl = () => {
     if (typeof formData.profile_path === "string" && formData.profile_path) {
-      // If the path doesn't start with http or https, it's likely a relative path stored in public disk
+      // If the path doesn't start with http or data, prepend the API storage URL
       if (
         !formData.profile_path.startsWith("http") &&
         !formData.profile_path.startsWith("data:")
       ) {
-        return `/${formData.profile_path}`;
+        return `http://127.0.0.1:8000/storage/${formData.profile_path}`;
       }
       return formData.profile_path;
     }
@@ -298,7 +331,7 @@ const UserProfileSection: React.FC<UserProfileSectionProps> = ({
                 className="w-24 h-24 rounded-full object-cover border-2 border-indigo-500"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = ""; // Or a fallback image
+                  e.currentTarget.src = "/placeholder-profile.png"; // Fallback image
                 }}
               />
             ) : (

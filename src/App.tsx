@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthRoutes } from "./routes/authRoutes";
 import { ClientRoutes } from "./routes/clientRoutes";
-import { OwnerRoutes } from "./routes/OwnerRoutes";
+import { OwnerRoutes } from "./routes/ownerRoutes";
 import { AdminRoutes } from "./routes/AdminRoutes";
 import { useEffect } from "react";
 import { useUserStore } from "./store/useUserStore";
