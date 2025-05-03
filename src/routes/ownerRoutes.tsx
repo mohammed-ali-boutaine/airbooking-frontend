@@ -33,7 +33,10 @@ export const OwnerRoutes = (user?: UserType | null) => {
       <Route
         path="/owner"
         element={
-          <PrivateRoute allowedRoles={["owner", "super-admin"]} user={user} />
+          <PrivateRoute
+            allowedRoles={["owner", "admin", "super-admin"]}
+            user={user}
+          />
         }
       >
         <Route element={<OwnerLayout />}>

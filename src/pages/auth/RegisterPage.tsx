@@ -11,6 +11,7 @@ interface RegisterFormData {
   email: string;
   password: string;
   profile_path: File | null;
+  role: "client" | "owner";
 }
 
 const RegisterPage = () => {
@@ -19,6 +20,7 @@ const RegisterPage = () => {
     email: "",
     password: "",
     profile_path: null,
+    role: "client",
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -58,6 +60,7 @@ const RegisterPage = () => {
       payload.append("name", formData.name);
       payload.append("email", formData.email);
       payload.append("password", formData.password);
+      payload.append("role", formData.role);
       if (formData.profile_path) {
         payload.append("profile_path", formData.profile_path);
       }
@@ -68,7 +71,14 @@ const RegisterPage = () => {
       const data = response.data;
       setUser(data.user, data.token);
       notifySuccess("Account created successfully!");
-      navigate("/");
+
+      // Redirect based on role
+      const role = data.user.role;
+      if (role === "client") {
+        navigate("/");
+      } else {
+        navigate(`/${role}`);
+      }
     } catch (err: any) {
       if (err.response?.status === 422) {
         const errors = Object.values(err.response.data.errors)
@@ -89,6 +99,49 @@ const RegisterPage = () => {
         Create an Account
       </h2>
       <form onSubmit={handleSubmit}>
+        {/* Role Selection */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            I want to
+          </label>
+          <div className="flex gap-4">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="role"
+                value="client"
+                checked={formData.role === "client"}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    role: e.target.value as "client" | "owner",
+                  }))
+                }
+                className="h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-color)] border-gray-300"
+              />
+              <span className="ml-2 text-sm text-gray-700">Book Hotels</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="role"
+                value="owner"
+                checked={formData.role === "owner"}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    role: e.target.value as "client" | "owner",
+                  }))
+                }
+                className="h-4 w-4 text-[var(--primary-color)] focus:ring-[var(--primary-color)] border-gray-300"
+              />
+              <span className="ml-2 text-sm text-gray-700">
+                List My Property
+              </span>
+            </label>
+          </div>
+        </div>
+
         {/* Moved profile image upload to the top */}
         <div className="mb-6 flex flex-col items-center">
           <label

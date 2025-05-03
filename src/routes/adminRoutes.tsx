@@ -18,13 +18,10 @@ export const AdminRoutes = (user?: UserType | null) => {
   return (
     // <Routes>
     user && (
-      <Route 
-        path="/admin" 
+      <Route
+        path="/admin"
         element={
-          <PrivateRoute 
-            allowedRoles={["admin", "super-admin"]} 
-            user={user ?? null} 
-          />
+          <PrivateRoute allowedRoles={["admin", "super-admin"]} user={user} />
         }
       >
         <Route element={<AdminLayout />}>

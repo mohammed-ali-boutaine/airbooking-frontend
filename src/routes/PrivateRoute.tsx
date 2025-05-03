@@ -1,5 +1,5 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { UserRole, UserType } from '../types/user'; // Adjust the import path as needed
+import { Navigate, Outlet } from "react-router-dom";
+import { UserRole, UserType } from "../types/user"; // Adjust the import path as needed
 
 interface PrivateRouteProps {
   allowedRoles: UserRole[];
@@ -11,10 +11,15 @@ const PrivateRoute = ({ allowedRoles, user }: PrivateRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
+  // Admin can access all routes
+  if (user.role === "admin" || user.role === "super-admin") {
+    return <Outlet />;
+  }
+
+  // Check if user's role is allowed
   if (!allowedRoles.includes(user.role)) {
-    return <Navigate to="/" replace />;
-    // Or you can redirect to an unauthorized page
-    // return <Navigate to="/unauthorized" replace />;
+    // Redirect to appropriate dashboard based on role
+    return <Navigate to={`/${user.role}`} replace />;
   }
 
   return <Outlet />;
