@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Hotel } from "../types";
 import axiosInstance from "../utils/axios";
 import HotelMap from "../components/map/HotelMap";
 import ImageSlider from "../components/ImageSlider/ImageSlider";
 import FullScreenGallery from "../components/ImageSlider/FullScreenGallery";
 import Button from "../components/static/Button";
+import { useUserStore } from "../store/useUserStore";
+import { notifyError, notifySuccess } from "../utils/toast";
 
 const HotelDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useUserStore();
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [galleryOpen, setGalleryOpen] = useState<boolean>(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const [bookingDates, setBookingDates] = useState({
+    checkIn: "",
+    checkOut: "",
+  });
+  const [guestCount, setGuestCount] = useState<number>(1);
+  const [bookingLoading, setBookingLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchHotelDetail = async () => {
@@ -80,6 +90,51 @@ const HotelDetailPage: React.FC = () => {
   const openGallery = (index: number) => {
     setSelectedImageIndex(index);
     setGalleryOpen(true);
+  };
+
+  const handleQuickBook = async () => {
+    if (!user) {
+      notifyError("Please login to book a room");
+      navigate("/login");
+      return;
+    }
+
+    if (user.role !== "client") {
+      notifyError("Only clients can book rooms");
+      return;
+    }
+
+    if (!hotel?.rooms || hotel.rooms.length === 0) {
+      notifyError("No rooms available for booking");
+      return;
+    }
+
+    if (!bookingDates.checkIn || !bookingDates.checkOut) {
+      notifyError("Please select check-in and check-out dates");
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+      const response = await axiosInstance.post("/bookings", {
+        room_id: hotel.rooms[0].id,
+        check_in: bookingDates.checkIn,
+        check_out: bookingDates.checkOut,
+        number_of_guests: guestCount,
+        special_requests: "",
+      });
+
+      notifySuccess("Room booked successfully!");
+      navigate("/profile");
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        notifyError(err.response.data.message);
+      } else {
+        notifyError("Failed to book room. Please try again.");
+      }
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   if (loading) {
@@ -395,6 +450,13 @@ const HotelDetailPage: React.FC = () => {
                       type="date"
                       className="mt-1 block w-full border-none p-0 focus:ring-0 text-sm"
                       min={new Date().toISOString().split("T")[0]}
+                      value={bookingDates.checkIn}
+                      onChange={(e) =>
+                        setBookingDates({
+                          ...bookingDates,
+                          checkIn: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div className="pl-2">
@@ -404,7 +466,17 @@ const HotelDetailPage: React.FC = () => {
                     <input
                       type="date"
                       className="mt-1 block w-full border-none p-0 focus:ring-0 text-sm"
-                      min={new Date().toISOString().split("T")[0]}
+                      min={
+                        bookingDates.checkIn ||
+                        new Date().toISOString().split("T")[0]
+                      }
+                      value={bookingDates.checkOut}
+                      onChange={(e) =>
+                        setBookingDates({
+                          ...bookingDates,
+                          checkOut: e.target.value,
+                        })
+                      }
                     />
                   </div>
                 </div>
@@ -413,22 +485,29 @@ const HotelDetailPage: React.FC = () => {
                 <label className="block text-xs text-gray-600 uppercase">
                   Guests
                 </label>
-                <select className="mt-1 block w-full border-none p-0 focus:ring-0 text-sm">
-                  <option>1 guest</option>
-                  <option>2 guests</option>
-                  <option>3 guests</option>
-                  <option>4 guests</option>
-                  <option>5+ guests</option>
+                <select
+                  className="mt-1 block w-full border-none p-0 focus:ring-0 text-sm"
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(parseInt(e.target.value))}
+                >
+                  {[...Array(10)].map((_, i) => (
+                    <option key={i} value={i + 1}>
+                      {i + 1} {i === 0 ? "guest" : "guests"}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
           </div>
 
-          {/* <button className="w-full bg-rose-600 text-white rounded-lg py-3 font-medium hover:bg-rose-700 transition-colors">
-            Reserve
-          </button> */}
-          <Button fullWidth={true} >
-            Book
+          <Button
+            fullWidth={true}
+            onClick={handleQuickBook}
+            disabled={
+              !bookingDates.checkIn || !bookingDates.checkOut || bookingLoading
+            }
+          >
+            {bookingLoading ? "Processing..." : "Book Now"}
           </Button>
 
           <div className="mt-4 text-center text-gray-500 text-sm">
@@ -651,11 +730,9 @@ const HotelDetailPage: React.FC = () => {
                       <span className="text-gray-600 text-sm">/night</span>
                     </div>
 
-                    <Button to={`/rooms/${room.id}`} >
-                    <span>View Details</span>
-
+                    <Button to={`/rooms/${room.id}`}>
+                      <span>View Details</span>
                     </Button>
-                
                   </div>
                 </div>
               </div>

@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 // import { RoomType } from "../types";
 import FullScreenGallery from "../components/ImageSlider/FullScreenGallery";
 import ImageSlider from "../components/ImageSlider/ImageSlider";
 import { useRoomStore } from "../store/useRoomStore";
+import { useUserStore } from "../store/useUserStore";
+import { notifyError, notifySuccess } from "../utils/toast";
+import axiosInstance from "../utils/axios";
 
 const RoomDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { room, loading, error, fetchRoomDetail } = useRoomStore();
+  const { user } = useUserStore();
+  const navigate = useNavigate();
   const [activeImage, setActiveImage] = useState<number>(0);
   const [galleryOpen, setGalleryOpen] = useState<boolean>(false);
   const [bookingDates, setBookingDates] = useState({
@@ -16,6 +21,7 @@ const RoomDetailPage: React.FC = () => {
   });
   const [guestCount, setGuestCount] = useState<number>(1);
   const [totalNights, setTotalNights] = useState<number>(1);
+  const [bookingLoading, setBookingLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (bookingDates.checkIn && bookingDates.checkOut) {
@@ -39,12 +45,44 @@ const RoomDetailPage: React.FC = () => {
     }
   }, [room, guestCount]);
 
-  const handleBooking = () => {
-    console.log("Booking room:", room);
-    console.log("Dates:", bookingDates);
-    console.log("Guests:", guestCount);
+  const handleBooking = async () => {
+    if (!user) {
+      notifyError("Please login to book a room");
+      navigate("/login");
+      return;
+    }
 
-    alert("Booking functionality would be implemented here!");
+    if (user.role !== "client") {
+      notifyError("Only clients can book rooms");
+      return;
+    }
+
+    if (!bookingDates.checkIn || !bookingDates.checkOut) {
+      notifyError("Please select check-in and check-out dates");
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+      const response = await axiosInstance.post("/bookings", {
+        room_id: room?.id,
+        check_in: bookingDates.checkIn,
+        check_out: bookingDates.checkOut,
+        number_of_guests: guestCount,
+        special_requests: "",
+      });
+
+      notifySuccess("Room booked successfully!");
+      navigate("/profile"); // Redirect to profile page where they can see their bookings
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        notifyError(err.response.data.message);
+      } else {
+        notifyError("Failed to book room. Please try again.");
+      }
+    } finally {
+      setBookingLoading(false);
+    }
   };
 
   const getRoomImageUrls = () => {
@@ -640,15 +678,20 @@ const RoomDetailPage: React.FC = () => {
             disabled={
               !bookingDates.checkIn ||
               !bookingDates.checkOut ||
-              !room.is_available
+              !room.is_available ||
+              bookingLoading
             }
             className={`w-full ${
-              room.is_available
+              room.is_available && !bookingLoading
                 ? "bg-rose-600 hover:bg-rose-700"
                 : "bg-gray-400 cursor-not-allowed"
             } text-white rounded-lg py-3 font-medium transition-colors`}
           >
-            {room.is_available ? "Reserve" : "Not Available"}
+            {bookingLoading
+              ? "Processing..."
+              : room.is_available
+              ? "Reserve"
+              : "Not Available"}
           </button>
 
           <div className="mt-4 text-center text-gray-500 text-sm">
