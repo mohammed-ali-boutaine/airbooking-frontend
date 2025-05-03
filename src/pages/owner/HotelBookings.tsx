@@ -54,7 +54,7 @@ const HotelBookings: React.FC = () => {
           //     },
           //   }
           // );
-          setHotelName(response.data.data.name);
+          setHotelName(response.data.name);
         }
 
         setError(null);

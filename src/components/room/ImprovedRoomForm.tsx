@@ -50,7 +50,7 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
     name: "",
     room_number: "",
     type: "Standard",
-    floor: null,
+    floor: 0,
     description: "",
     bed_numbers: 1,
     capacity: 1,
@@ -108,7 +108,7 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
         bed_numbers: roomData.bed_numbers,
         capacity: roomData.capacity,
         price_per_night: roomData.price_per_night,
-        is_available: roomData.is_available,
+        // is_available: roomData.is_available,
         amenities: roomData.amenities || [],
       });
 
@@ -231,7 +231,7 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
         const formData = new FormData();
         formData.append("image", image);
         // formData.append("is_primary", false);
-        // formData.append("room_id", roomId.toString());
+        formData.append("room_id", roomId.toString());
 
         const response = await axiosInstance.post(
           `/rooms/${roomId}/images`,
@@ -286,7 +286,7 @@ const ImprovedRoomForm: React.FC<RoomFormProps> = ({ isEdit = false }) => {
         bed_numbers: formData.bed_numbers,
         capacity: formData.capacity,
         price_per_night: formData.price_per_night,
-        is_available: formData.is_available,
+        // is_available: formData.is_available,
         amenities: formData.amenities || [],
       };
 

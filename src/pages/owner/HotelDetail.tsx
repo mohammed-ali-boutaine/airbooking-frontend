@@ -370,14 +370,14 @@ const HotelDetail: React.FC = () => {
             {hotel.cover_path && (
               <div className="relative h-96 rounded-lg overflow-hidden">
                 <img
-                  src={`${hotel.cover_path}`}
+                  src={`http://127.0.0.1:8000/storage/${hotel.cover_path}`}
                   alt={hotel.name}
                   className="w-full h-full object-cover"
                 />
                 {hotel.profile_path && (
                   <div className="absolute bottom-4 left-4">
                     <img
-                      src={`${hotel.profile_path}`}
+                      src={`http://127.0.0.1:8000/storage/${hotel.profile_path}`}
                       alt={`${hotel.name} logo`}
                       className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
                     />

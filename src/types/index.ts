@@ -88,10 +88,12 @@ export interface Room {
   room_number: string;
   floor: number;
   capacity: number;
-  price_per_night: string;
+  price_per_night: number;
   bed_numbers: number;
   amenities: string[];
   images: RoomImage[];
+  is_available?: true,
+  hotel?:HotelType
 }
 
 export interface RoomImage {

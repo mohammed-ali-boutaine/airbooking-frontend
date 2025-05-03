@@ -55,7 +55,7 @@ export const OwnerRoutes = (user?: UserType | null) => {
           <Route path="rooms" element={<Rooms />} />
           <Route path="bookings" element={<OwnerBookings />} />
           <Route path="hotels/:hotelId/bookings" element={<HotelBookings />} />
-          <Route path="booking" element={<ProfilePage />} />
+          {/* <Route path="booking" element={<ProfilePage />} /> */}
           <Route path="profile" element={<ProfilePage />} />
         </Route>
         <Route path="*" element={<NotFound />} />
