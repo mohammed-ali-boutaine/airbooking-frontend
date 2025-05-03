@@ -46,7 +46,7 @@ export const useBookingStore = create<BookingStore>((set) => ({
     try {
       set({ loading: true, error: null });
       const response = await axiosInstance.get("/bookings");
-      console.log(response);
+      console.log(response.data);
       
       set({ bookings: response.data || [], loading: false });
     } catch (error) {

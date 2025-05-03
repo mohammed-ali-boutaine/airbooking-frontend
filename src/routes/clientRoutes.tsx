@@ -5,6 +5,7 @@ import ProfilePage from "../pages/ProfilePage";
 import HotelDetailPage from "../pages/HotelDetailPage";
 import RoomDetailPage from "../pages/RoomDetailPage";
 import WishlistPage from "../pages/WishlistPage";
+import BookingsPage from "../pages/BookingsPage";
 import PrivateRoute from "./PrivateRoute";
 import { UserType } from "../types";
 
@@ -24,6 +25,7 @@ export const ClientRoutes = (user?: UserType | null) => (
       >
         <Route path="profile" element={<ProfilePage />} />
         <Route path="wishlist" element={<WishlistPage />} />
+        <Route path="bookings" element={<BookingsPage />} />
       </Route>
     )}
   </Route>
