@@ -38,14 +38,23 @@ export interface RoomImage {
 
 export interface BookingType {
   id: number;
+  client_id: number;
   room_id: number;
-  user_id: number;
   check_in: string;
   check_out: string;
+  number_of_guests: number;
   total_price: number;
   status: string;
   created_at: string;
   updated_at: string;
+  room?: {
+    id: number;
+    name: string;
+    hotel?: {
+      id: number;
+      name: string;
+    };
+  };
 }
 
 export interface Tag {
@@ -92,8 +101,8 @@ export interface Room {
   bed_numbers: number;
   amenities: string[];
   images: RoomImage[];
-  is_available?: true,
-  hotel?:HotelType
+  is_available?: true;
+  hotel?: HotelType;
 }
 
 export interface RoomImage {

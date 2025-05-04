@@ -151,7 +151,7 @@ const BookingList: React.FC<BookingListProps> = ({
                   sx={{ verticalAlign: "middle" }}
                 />
                 {booking.total_price
-                  ? `$${Number(booking.total_price).toFixed(2)}`
+                  ? `${Number(booking.total_price).toFixed(2)}`
                   : "N/A"}
               </Typography>
             </Box>
